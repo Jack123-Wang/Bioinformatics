@@ -1,0 +1,10 @@
+setwd("C:\\Users\\Administrator\\Desktop\\生信分析记录\\ggplot2（3.11-3.15)\\mESC筛库_output\\累计分布函数、箱式图")
+
+#箱式图的制作关键在于txt文件的准备，一共两列，一列log2 count,一列type，注意要有header(header内部不可有空格)
+test1<- read.table("box.txt",header = TRUE)
+library(ggplot2)
+#调整箱式图box的宽度、改标题以及XY轴名称、按照箱式图的数据形式，更改累积分布函数，可以有三列：
+#一列X，一列Y，一列名称
+p <- ggplot(test1,aes(Type,read_count))
+p +  geom_boxplot(aes(color=Type),width=0.5)+
+  labs(title ='mESC筛库sgRNA_Box plot',x='',y='sgRNA representation(log2 normalized sgRNA counts)')
