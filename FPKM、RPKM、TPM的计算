@@ -1,0 +1,63 @@
+setwd("F:\\生信Data")
+install.packages("data.table")
+BiocManager::install("rtracklayer")
+BiocManager::install("IRanges")
+
+#1.计算小鼠基因长度
+library(data.table)
+library("IRanges")
+require("rtracklayer")
+mmu10 <- readGFF("gencode.vM24.annotation.gtf")
+anno <- setDT(mmu10)
+anno <- anno[type=="exon",]
+setnames(anno,c("seqid","start","end","gene_name","exon_number"),c("Chr","ExonStart","ExonEnd","Gene","Exon_number"))
+
+Exon_region <- unique(anno[,.(Chr,ExonStart,ExonEnd,Exon_number,Gene)])
+Exon_region <- Exon_region[,{x <- IRanges(ExonStart,ExonEnd);y <- reduce(x); list(ExonStart=y@start,ExonEnd=y@start+y@width-1)},by=.(Gene,Chr)]
+Exon_region[,Exon_num:=1:.N,by=Gene]
+Exon_region <- Exon_region[,.(Chr,ExonStart,ExonEnd,Exon_num,Gene)]
+Exon_len <- Exon_region[,.(ExonLen = ExonEnd - ExonStart + 1),by=.(Exon_num,Gene)]
+gene_len <- Exon_len[,.(Length = sum(ExonLen)),by=Gene]
+
+fwrite(gene_len, file = "All_mmu10gene_len.txt", sep = "\t", col.names = T)
+#2.计算FPKM,TPM（需要两组数据：read count和基因长度）
+#2.1 在excel里，将两组数据以基因名称为索引整合，运用函数vlookup，个人建议"精确匹配"
+#整合好后，以txt导出，确定好工作目录后，导入
+countDf <- read.table("test.txt",header = T)
+# 官网https://haroldpimentel.wordpress.com/2014/05/08/what-the-fpkm-a-review-rna-seq-expression-units/
+#中提到FLD，和有效长度的概念，尚未研究清楚，暂时使用例子中的数值※※a
+#ssume a mean(FLD) = 203.7
+countDf$effLength <- countDf$length - 203.7 + 1
+
+#2.2创建函数
+countToTpm <- function(counts, effLen)
+{
+  rate <- log(counts) - log(effLen)
+  denom <- log(sum(exp(rate)))
+  exp(rate - denom + log(1e6))
+}
+
+countToFpkm <- function(counts, effLen)
+{
+  N <- sum(counts)
+  exp( log(counts) + log(1e9) - log(effLen) - log(N) )
+}
+
+fpkmToTpm <- function(fpkm)
+{
+  exp(log(fpkm) - log(sum(fpkm)) + log(1e6))
+}
+
+countToEffCounts <- function(counts, len, effLen)
+{
+  counts * (len / effLen)
+}
+
+#2.3计算TPM\FPKM
+countDf$tpm <- with(countDf, countToTpm(ESC_read_count, effLength))
+countDf$fpkm <- with(countDf, countToFpkm(ESC_read_count, effLength))
+with(countDf, all.equal(tpm, fpkmToTpm(fpkm)))
+countDf$effCounts <- with(countDf, countToEffCounts(ESC_read_count, length, effLength))
+
+#2.4导出结果
+write.csv(countDf,"FPKM.csv", row.names=F)
