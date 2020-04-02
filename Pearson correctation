@@ -1,0 +1,14 @@
+library(heatmap.3)
+setwd("C:\\Users\\Administrator\\Desktop\\生信分析记录\\3.12(ggplot2)\\mESC筛库_output\\TROM图")
+#test1.txt格式是一个矩阵：纵轴为n列待比较样本，横轴为全基因组/全体sgRNA
+test1 <- read.table("test1.txt",header = TRUE)
+library(Hmisc)
+res2 <- rcorr(as.matrix(test1))
+#查看相关系数
+res2$r
+#查看显著性p-value
+res2$P
+col<- colorRampPalette(c("white", "red"))(20)#调用颜色版自定义颜色
+heatmap3(res2$r,
+         margins=c(16,16),
+         col = col,symm = TRUE)#symm表示是否对称
