@@ -1,0 +1,24 @@
+#参考网站：https://blog.csdn.net/qq_33335484/article/details/80389807
+setwd("C:\\Users\\Administrator\\Desktop\\生信分析记录\\课题：mESC筛库（YM）\\output\\质量控制\\概率密度函数\\input")
+test1<- read.table("plasmid.txt",header=TRUE)
+#每一列都赋予一个向量（CC1\CC2\TC1\TC2)
+CC1<- test1$plasmid
+#向量排序（CC1)
+CC1<-sort(CC1)
+
+#用pnorm函数取向量中每一个点所对应的累计分布函数
+#注意pnrom函数中mean选项必需取平均值，不是默认的0，※而且sd选择必需取CC1的平均差※，否则函数认为我们的数据是以x=0对称的，标准差为1，默认会出错误的！
+z1=dnorm(CC1,mean(CC1),sd(CC1))
+
+#将CC/TC向量和Z向量组成一个两列的数组，以便后续画图（CC/TC为X，z为Y）
+data1=data.frame(CC1,z1)
+data1$v3<- c("control_count1")
+#合并data，合并前统一列名
+colnames(data1)<-c("read_count","dnrom","type")
+
+library(ggplot2)
+p <- ggplot()
+p + geom_line(data = data1,mapping = aes(x=read_count,y=dnrom),size=0.5,show.legend = TRUE)+
+  labs(title ='dnorm概率分布图',x='read count',y='density')
+
+
