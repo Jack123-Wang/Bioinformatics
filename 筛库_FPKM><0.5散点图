@@ -1,0 +1,15 @@
+setwd("C:\\Users\\Administrator\\Desktop\\生信分析记录\\FPKM计算\\output（ggplot2）")
+test1 <- read.table("FPKM less than 0.5.txt",header=TRUE)
+test2 <- read.table("FPKM more than 0.5.txt",header=TRUE)
+library(ggplot2)
+p <- ggplot()
+#散点图+X/Y轴的名称修改；
+p + geom_point(data = test1, mapping = aes(x = control_mean, y = treat_mean),size=1,color="blue")+ 
+  labs(title="FPKM less than 0.5", x="control_mean", y="treat_mean") +
+  ylim(0,1000)+xlim(0,1000)
+
+p <- ggplot()
+#散点图+X/Y轴的名称修改；
+p + geom_point(data = test2, mapping = aes(x = control_mean, y = treat_mean),size=1,color="red")+ 
+  labs(title="FPKM more than 0.5", x="control_mean", y="treat_mean") +
+  ylim(0,1000)+xlim(0,1000)
