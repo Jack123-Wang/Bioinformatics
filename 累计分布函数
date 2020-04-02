@@ -1,0 +1,44 @@
+#学习pnrom函数的例子：https://blog.csdn.net/lulujiang1996/article/details/78552406
+setwd("C:\\Users\\Administrator\\Desktop\\生信分析记录\\ggplot2（3.11-3.15)\\mESC筛库_output\\累计分布函数、箱式图")
+test1<- read.table("test1.txt",header=TRUE)
+#每一列都赋予一个向量（CC1\CC2\TC1\TC2)
+CC1<- test1$control_count1
+CC2<- test1$control_count2
+TC1<- test1$treatment_count1
+TC2<- test1$treatment_count2
+#向量排序（CC1\CC2\TC1\TC2)
+CC1<-sort(CC1)
+CC2<-sort(CC2)
+TC1<-sort(TC1)
+TC2<-sort(TC2)
+#用pnorm函数取向量中每一个点所对应的累计分布函数
+#注意pnrom函数中mean选项必需取平均值，不是默认的0，否则函数认为我们的数据是以x=0对称的
+z1=pnorm(CC1,mean(CC1))
+z2=pnorm(CC2,mean(CC2))
+z3=pnorm(TC1,mean(TC1))
+z4=pnorm(TC2,mean(TC2))
+
+#将CC/TC向量和Z向量组成一个两列的数组，以便后续画图（CC/TC为X，z为Y）
+data1=data.frame(CC1,z1)
+data2=data.frame(CC2,z2)
+data3=data.frame(TC1,z3)
+data4=data.frame(TC2,z4)
+data1$v3<- c("control_count1")
+data2$v3<- c("control_count2")
+data3$v3<- c("treatment_count1")
+data4$v3<- c("treatment_count2")
+#合并data，合并前统一列名
+colnames(data1)<-c("log2read_count","pnrom","type")
+colnames(data2)<-c("log2read_count","pnrom","type")
+colnames(data3)<-c("log2read_count","pnrom","type")
+colnames(data4)<-c("log2read_count","pnrom","type")
+data_total <- rbind(data1,data2,data3,data4)
+
+library(ggplot2)
+p <- ggplot()
+p + geom_line(data = data_total,mapping = aes(x=log2read_count,y=pnrom,colour =type),size=1.5,show.legend = TRUE)+
+  labs(title ='mESC筛库sgRNA累计分布函数图',x='sgRNA read count(log2)',y='Cumulative Distribution Function')
+
+
+
+
