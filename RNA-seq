@@ -1,0 +1,16 @@
+##############################################################1.批量下载SRR  #############################################################
+
+#前提已经安装好ascp和sratool
+#1.1在想要下载的该文件夹中建立批量目录文件：
+cat>SRR_Acc_List.txt #之后复制粘贴SRR序列号
+ctrl+d#结束编辑
+#1.2批量下载（注意要引用两个位置：bin、etc）,建议在后台下载 nohup &
+nohup prefetch --ascp-path "/home/wfs19981129/.aspera/connect/bin/ascp|/home/wfs19981129/.aspera/connect/etc/asperaweb_id_dsa.openssh" --option-file SRR_Acc_List.txt &
+#1.3查看下载进程
+cat nohup.out #查看下载是否中断或失败，若失败nohup.out里可查见
+ls -alh #查看当前文件大小
+
+###########################################################2.将SRR文件转换为fastq  ########################################################
+#利用fastq-dump批量转换（时间较长）
+nohup ls /root/ncbi/public/sra/*  | while read id; do ( fastq-dump --gzip --split-3 -O ./ ${id}  ); done &
+ls -alh #查看fastq大小
