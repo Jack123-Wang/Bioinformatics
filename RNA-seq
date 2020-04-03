@@ -18,10 +18,13 @@ ls -alh #查看fastq大小
 
 
 ####################################################3.下载参考基因组和基因注释文件##########################################################
-# 1.axel下载
+# 1.axel下载参考基因组mmu10
 nohup axel http://hgdownload.soe.ucsc.edu/goldenPath/mm10/bigZips/chromFa.tar.gz &
 tar -zxvf chromFa.tar.gz# 解压，得到所有染色体的信息
 # 2.将所有的染色体信息整合在一起，重定向写入mmu10.fa文件，得到参考基因组
 cat *.fa > mmu10.fa
 # 3.将多余的染色体信息文件删除，节省空间
 $ rm -rf chr*
+# 4.axel下载小鼠基因注释文件(这个下载时间较短，可以不用放在后台跑）
+axel ftp://ftp.ebi.ac.uk/pub/databases/gencode/Gencode_mouse/release_M24/gencode.vM24.annotation.gtf.gz
+gunzip *.gz && rm -rf *.gz #解压缩后，并删除压缩包
