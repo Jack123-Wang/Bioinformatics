@@ -19,8 +19,11 @@ conda config --set show_channel_urls yes
 conda create -n rna python=2 #创建名为rna的软件安装环境
 conda info --envs #查看当前conda环境
 source activate rna #激活conda的rna环境
+
+###############################################################################################
+###################     注意sra-tools不要在conda上安装，不能正常下载   ###########################
+###############################################################################################
 ##安装以下软件
-conda install -y sra-tools
 conda install -y trimmomatic
 conda install -y cutadapt multiqc 
 conda install -y trim-galore
@@ -50,10 +53,17 @@ source ~/.bash_profile  #让配置生效
 
 su root #此时再切换回root用户就可以是使用了
 ascp -help #验证ascp有无安装成功
+4.下载sra-tools
+wget -b https://ftp-trace.ncbi.nlm.nih.gov/sra/sdk/2.9.2/sratoolkit.2.9.2-centos_linux64.tar.gz
+或
+nohup axel https://ftp-trace.ncbi.nlm.nih.gov/sra/sdk/2.9.2/sratoolkit.2.9.2-centos_linux64.tar.gz &
+#若网速差，建议在自己电脑上下载（https://ftp-trace.ncbi.nlm.nih.gov/sra/sdk/2.9.2/sratoolkit.2.9.2-centos_linux64.tar.gz）
+#再传到服务器上（windows上下载WINSCP），都会比直接在linux上下载快
+
 
 
 #########################################################################################################################################
-#################################################      1.利用ascp高速批量下载SRR     #############################################################
+#################################################      1.1 利用ascp\prefetch批量下载SRR     #############################################################
 #########################################################################################################################################
 
 #前提已经安装好ascp和sratool
@@ -66,6 +76,11 @@ nohup prefetch --ascp-path "/.aspera/connect/bin/ascp|/.aspera/connect/etc/asper
 #1.3查看下载进程
 cat nohup.out #查看下载是否中断或失败，若失败nohup.out里可查见
 ls -alh #查看当前文件大小
+#################################################      1.2 利用prefetch批量下载SRR     #############################################################
+
+prefetch SRRxxxxxx
+prefetch --option-file SRR_Acc_List.txt  #批量下载
+
 
 #########################################################################################################################################
 ###########################################################2.将SRR文件转换为fastq  ########################################################
