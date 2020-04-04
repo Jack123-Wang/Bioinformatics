@@ -1,0 +1,40 @@
+####################################################################################################################################################
+#####################################################     云服务器挂载新云硬盘     ####################################################################################
+#################################################################################################################################################
+
+df -h #查看硬盘容量是否已满
+
+Filesystem     Type      Size  Used Avail Use% Mounted on
+devtmpfs       devtmpfs  948M     0  948M   0% /dev
+tmpfs          tmpfs     964M   25k  964M   1% /dev/shm
+tmpfs          tmpfs     964M  828k  963M   1% /run
+tmpfs          tmpfs     964M     0  964M   0% /sys/fs/cgroup
+/dev/vda1      ext4       53G   45G  5.9G  89% /
+tmpfs          tmpfs     193M     0  193M   0% /run/user/0
+/dev/vdb       ext4       53G   55M   50G   1% /root
+
+fdisk -l #查看云硬盘名称以内容
+
+Disk /dev/vda: 53.7 GB, 53687091200 bytes, 104857600 sectors
+Units = sectors of 1 * 512 = 512 bytes
+Sector size (logical/physical): 512 bytes / 512 bytes
+I/O size (minimum/optimal): 512 bytes / 512 bytes
+Disk label type: dos
+Disk identifier: 0x0009ac89
+
+   Device Boot      Start         End      Blocks   Id  System
+/dev/vda1   *        2048   104857566    52427759+  83  Linux
+
+Disk /dev/vdc: 53.7 GB, 53687091200 bytes, 104857600 sectors
+Units = sectors of 1 * 512 = 512 bytes
+Sector size (logical/physical): 512 bytes / 512 bytes
+I/O size (minimum/optimal): 512 bytes / 512 bytes
+
+
+Disk /dev/vdd: 53.7 GB, 53687091200 bytes, 104857600 sectors
+Units = sectors of 1 * 512 = 512 bytes
+Sector size (logical/physical): 512 bytes / 512 bytes
+I/O size (minimum/optimal): 512 bytes / 512 bytes
+
+#挂载到制定文件夹(但是注意，会把之前的文件顶替掉）
+mount /dev/vdb <制定文件夹>
