@@ -6,5 +6,12 @@ kill -SIGTERM <PID>
 kill -SIGSTOP <PID>
 启动进程被终止的进程
 kill -SIGHUP <PID>
+
 脱机管理
 nohup <command> &
+
+
+新建用户名
+useradd test
+gpasswd -a test root #赋予test普通用户权限
+su test #切换test用户
