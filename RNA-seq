@@ -37,9 +37,19 @@ axel https://download.asperasoft.com/download/sw/connect/3.9.1/ibm-aspera-connec
 tar zxvf ibm-aspera-connect-3.9.1.171801-linux-g2.12-64.tar.gz
 #运行Aspera：
 bash ibm-aspera-connect-3.9.1.171801-linux-g2.12-64.sh
+
+#若是root用户则不能安装，需要新建普通用户，并赋予root组权限
+useradd test
+gpasswd -a test root
+su test
+bash ibm-aspera-connect-3.9.1.171801-linux-g2.12-64.tar.gz
+
 #添加环境变量：
-echo 'export PATH=$PATH:~/.aspera/connect/bin' >> ~/.bash_profile  #主页面上存在.bash profile为隐藏文件夹
+echo 'export PATH=$PATH:/home/test/.aspera/connect/bin' >> ~/.bash_profile  #主页面上存在.bash profile为隐藏文件夹
 source ~/.bash_profile  #让配置生效
+
+su root #此时再切换回root用户就可以是使用了
+ascp -help #验证ascp有无安装成功
 
 
 #########################################################################################################################################
@@ -52,6 +62,7 @@ cat>SRR_Acc_List.txt #之后复制粘贴SRR序列号
 ctrl+d#结束编辑
 #1.2批量下载（注意要引用两个位置：bin、etc）,建议在后台下载 nohup &
 nohup prefetch --ascp-path "/home/wfs19981129/.aspera/connect/bin/ascp|/home/wfs19981129/.aspera/connect/etc/asperaweb_id_dsa.openssh" --option-file SRR_Acc_List.txt &
+nohup prefetch --ascp-path "/.aspera/connect/bin/ascp|/.aspera/connect/etc/asperaweb_id_dsa.openssh" --option-file SRR_Acc_List.txt &
 #1.3查看下载进程
 cat nohup.out #查看下载是否中断或失败，若失败nohup.out里可查见
 ls -alh #查看当前文件大小
