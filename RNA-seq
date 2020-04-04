@@ -1,5 +1,50 @@
-##############################################################1.批量下载SRR  #############################################################
+#########################################################################################################################################
+#############################################################      0.安装必备的软件     #############################################################
+#########################################################################################################################################
 
+
+#1.安装Miniconda
+mkdir app
+cd app
+wget -c https://mirrors.tuna.tsinghua.edu.cn/anaconda/miniconda/Miniconda3-4.5.4-Linux-x86_64.sh
+bash Miniconda3-4.5.4-Linux-x86_64.sh
+
+#添加镜像
+conda config --add channels https://mirrors.tuna.tsinghua.edu.cn/anaconda/pkgs/free
+conda config --add channels https://mirrors.tuna.tsinghua.edu.cn/anaconda/cloud/conda-forge
+conda config --add channels https://mirrors.tuna.tsinghua.edu.cn/anaconda/cloud/bioconda
+conda config --set show_channel_urls yes
+
+#为了避免污染linux工作环境，推荐在conda中创建各个流程的安装环境，比如：
+conda create -n rna python=2 #创建名为rna的软件安装环境
+conda info --envs #查看当前conda环境
+source activate rna #激活conda的rna环境
+##安装以下软件
+conda install -y sra-tools
+conda install -y trimmomatic
+conda install -y cutadapt multiqc 
+conda install -y trim-galore
+conda install -y star hisat2 bowtie2
+conda install -y subread tophat htseq bedtools deeptools
+conda install -y salmon
+source deactivate #注销当前的rna环境
+#2.安装axel
+https://www.cnblogs.com/xiaochina/p/8516875.html
+
+#3.下载Aspera ：
+wget https://download.asperasoft.com/download/sw/connect/3.9.1/ibm-aspera-connect-3.9.1.171801-linux-g2.12-64.tar.gz
+#解压Aspera：
+tar zxvf ibm-aspera-connect-3.9.1.171801-linux-g2.12-64.tar.gz
+#运行Aspera：
+bash ibm-aspera-connect-3.9.1.171801-linux-g2.12-64.sh
+#添加环境变量：
+echo 'export PATH=$PATH:~/.aspera/connect/bin' >> ~/.bash_profile  #主页面上存在.bash profile为隐藏文件夹
+source ~/.bash_profile  #让配置生效
+
+
+#########################################################################################################################################
+#############################################################      1.批量下载SRR     #############################################################
+#########################################################################################################################################
 #前提已经安装好ascp和sratool
 #1.1在想要下载的该文件夹中建立批量目录文件：
 cat>SRR_Acc_List.txt #之后复制粘贴SRR序列号
