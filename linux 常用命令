@@ -1,0 +1,10 @@
+查看进程
+ps aux |grep '<command>'
+中断进程
+kill -SIGTERM <PID>
+暂停进程
+kill -SIGSTOP <PID>
+启动进程被终止的进程
+kill -SIGHUP <PID>
+脱机管理
+nohup <command> &
