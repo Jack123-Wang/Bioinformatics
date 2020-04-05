@@ -168,11 +168,17 @@ source deactivate
 nohup bash hisat2.sh &
 
 2.利用samtool转换BAM：（SAM→BAM）
-2.1 转化BAM
+2.1 首先将比对后的sam文件转换成bam文件
 单独转换
 samtools view -S SRR7624365.hisat.sam -b > SRR7624365.hisat.bam
 批量转换
 ？？？？ ls *.sam|while read id ;do (samtools sort -O bam -@ 5  -o $(basename ${id} ".sam").bam   ${id});done
 rm *.sam 
-2.2 BAM排序
+2.2 将所有的bam文件按默认的染色体位置进行排序
+#批量  
 ls *.bam|while read id ;do samtools sort  ${id} -o  ${id}_sorted.bam; done
+#单个
+samtools sort  SRR7624379.hisat.bam -o  SRR7624379.hisat.bam_sorted.bam
+2.3为bam文件建立索引
+#批量
+ls *.bam_sorted.bam|while read id ;do samtools index ${id};done
