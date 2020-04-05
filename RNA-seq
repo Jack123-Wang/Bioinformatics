@@ -24,6 +24,7 @@ source activate rna #激活conda的rna环境
 ###################     注意sra-tools不要在conda上安装，不能正常下载   ###########################
 ###############################################################################################
 ##安装以下软件
+conda install -y samtools
 conda install -y trimmomatic
 conda install -y cutadapt multiqc 
 conda install -y trim-galore
@@ -163,4 +164,6 @@ source deactivate
 #Tip1：/root/genome/index/mm10/genome #在mm10内包含genome.*.ht2的8个文件和一个shell脚本，但并没有一个叫“genome”的文件，故这里的genome是一个统称。
 
 nohup bash hisat2.sh &
-
+#SAM转BAM
+samtools view -S SRR7624365.hisat.sam -b > SRR7624365.hisat.bam
+SRR7624365.hisat.sam
