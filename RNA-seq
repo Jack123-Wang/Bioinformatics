@@ -83,6 +83,10 @@ ls -alh #查看当前文件大小
 prefetch SRRxxxxxx
 prefetch --option-file SRR_Acc_List.txt  #批量下载
 
+#验证下载是否成功：
+（1）查看nohup.out，是否下载完整(cat nohup.out)；
+（2）SRA网站核对大小是否和自己文件的大小一样（ls -alh)
+
 
 #########################################################################################################################################
 ###########################################################2.将SRR文件转换为fastq  ########################################################
@@ -91,6 +95,29 @@ prefetch --option-file SRR_Acc_List.txt  #批量下载
 #利用fastq-dump批量转换（时间较长）
 nohup ls /root/ncbi/public/sra/*  | while read id; do ( fastq-dump --gzip --split-3 -O ./ ${id}  ); done &
 ls -alh #查看fastq大小
+
+#fastqc生成质控报告，multiqc将各个样本的质控报告整合为一个。
+source activate rna # 如果不激活，系统将不能直接调用fastqc
+ls *gz | xargs fastqc -t 2 #一个约5min，若多可以放入后台
+multiqc ./
+
+
+##########################################           trim_galore，用于去除低质量和接头数据        ##########################################
+
+cat >qc.sh #建立脚本(以下为脚本内容）
+####################################################
+source activate rna
+dir='/root/ncbi/public/sra/clean'
+cat config  |while read id
+do
+        arr=(${id})
+        fq1=${arr[0]}
+        fq2=${arr[1]} 
+        trim_galore -q 25 --phred33 --length 36 --stringency 3 --paired -o $dir  $fq1 $fq2 
+done 
+source deactivate 
+#####################################################
+nohup bash qc.sh &（时间较长，建议放后台）
 
 
 #########################################################################################################################################
@@ -102,16 +129,38 @@ mkdir genome
 cd genome/
 nohup axel http://hgdownload.soe.ucsc.edu/goldenPath/mm10/bigZips/chromFa.tar.gz &
 tar -zxvf chromFa.tar.gz# 解压，得到所有染色体的信息
-# 2.将所有的染色体信息整合在一起，重定向写入mmu10.fa文件，得到参考基因组
-cat *.fa > mmu10.fa
-# 3.将多余的染色体信息文件删除，节省空间
-$ rm -rf chr*
-# 4.axel下载小鼠基因注释文件(这个下载时间较短，可以不用放在后台跑）
+cat *.fa > mmu10.fa # 将所有的染色体信息整合在一起，重定向写入mmu10.fa文件，得到参考基因组
+$ rm -rf chr* # 将多余的染色体信息文件删除，节省空间
+
+# 2.axel下载小鼠基因注释文件(这个下载时间较短，可以不用放在后台跑）
 mkdir gtf
 cd gtf/
 axel ftp://ftp.ebi.ac.uk/pub/databases/gencode/Gencode_mouse/release_M24/gencode.vM24.annotation.gtf.gz
 gunzip *.gz && rm -rf *.gz #解压缩后，并删除压缩包
-# 5.下载mmu10的index（hiseq网站）(时间较长，建议后台跑）
+# 3.下载mmu10的index（hiseq网站）(时间较长，建议后台跑）
 mkdir index
 cd index/
+mkdir hisat2
+cd hisat2/ #建议在hisat2文件夹内下载index，因为不同的比对工具都有自己的index，为了防止弄混，故在index内再新建hisat2文件夹
 nohup axel ftp://ftp.ccb.jhu.edu/pub/infphilo/hisat2/data/mm10.tar.gz &
+
+#########################################################################################################################################
+#############################################      4.hisat2序列比对            ##########################################################
+#########################################################################################################################################
+
+hisat2资料详解：http://www.biotrainee.com/thread-2073-1-1.html
+
+cd /root/ncbi/pubilc/sra/clean
+vim hisat2.sh
+###########################
+source activate rna
+nohup ls *gz|cut -d"_" -f 1 |sort -u |while read id;do
+ls -lh ${id}_1_val_1.fq.gz   ${id}_2_val_2.fq.gz 
+hisat2 -p 4 -x /root/genome/index/mm10/genome -1 ${id}_1_val_1.fq.gz   -2 ${id}_2_val_2.fq.gz  -S ${id}.hisat.sam
+done &
+source deactivate
+###########################
+#Tip1：/root/genome/index/mm10/genome #在mm10内包含genome.*.ht2的8个文件和一个shell脚本，但并没有一个叫“genome”的文件，故这里的genome是一个统称。
+
+nohup bash hisat2.sh &
+
