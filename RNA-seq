@@ -172,7 +172,7 @@ nohup bash hisat2.sh &
 单独转换
 samtools view -S SRR7624365.hisat.sam -b > SRR7624365.hisat.bam
 批量转换
-？？？？ ls *.sam|while read id ;do (samtools sort -O bam -@ 5  -o $(basename ${id} ".sam").bam   ${id});done
+for ((i=56;i<=62;i++));do samtools view -S SRR35899${i}.sam -b > SRR35899${i}.bam;done
 rm *.sam 
 2.2 将所有的bam文件按默认的染色体位置进行排序
 #批量  
@@ -182,3 +182,9 @@ samtools sort  SRR7624379.hisat.bam -o  SRR7624379.hisat.bam_sorted.bam
 2.3为bam文件建立索引
 #批量
 ls *.bam_sorted.bam|while read id ;do samtools index ${id};done
+#########################################################################################################################################
+######################################################     5.count计数            ##########################################################
+#########################################################################################################################################
+
+gtf="/root/genome/gtf/gencode.vM24.annotation.gtf"
+featureCounts -T 5 -p -t exon -g gene_id  -a $gtf -o  all.id.txt  *_sorted.bam  1>counts.id.log 2>&1 &
