@@ -149,6 +149,8 @@ nohup axel ftp://ftp.ccb.jhu.edu/pub/infphilo/hisat2/data/mm10.tar.gz &
 #############################################      4.hisat2序列比对            ##########################################################
 #########################################################################################################################################
 
+1.利用hisat2序列比对（fastq→SAM）
+
 hisat2资料详解：http://www.biotrainee.com/thread-2073-1-1.html
 
 cd /root/ncbi/pubilc/sra/clean
@@ -164,6 +166,13 @@ source deactivate
 #Tip1：/root/genome/index/mm10/genome #在mm10内包含genome.*.ht2的8个文件和一个shell脚本，但并没有一个叫“genome”的文件，故这里的genome是一个统称。
 
 nohup bash hisat2.sh &
-#SAM转BAM
+
+2.利用samtool转换BAM：（SAM→BAM）
+2.1 转化BAM
+单独转换
 samtools view -S SRR7624365.hisat.sam -b > SRR7624365.hisat.bam
-SRR7624365.hisat.sam
+批量转换
+？？？？ ls *.sam|while read id ;do (samtools sort -O bam -@ 5  -o $(basename ${id} ".sam").bam   ${id});done
+rm *.sam 
+2.2 BAM排序
+ls *.bam|while read id ;do samtools sort  ${id} -o  ${id}_sorted.bam; done
