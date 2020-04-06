@@ -103,6 +103,7 @@ ls *gz | xargs fastqc -t 2 #一个约5min，若多可以放入后台
 multiqc ./
 
 --------------------------------------------------------------     凤生操作        -------------------------------------------------------
+
 ls ncbi/public/sra/* | while read ids; do id=`basename $ids .sra`;echo $id;fasterq-dump -e 5 -S -p -o $id.fastq $ids 1>$id.fq.log 2>&1; done&  
 #-e线程是5的时候，当调用多个线程时，可明显提高转换速度，线程为5时，5-6min转换一个fastq
 
