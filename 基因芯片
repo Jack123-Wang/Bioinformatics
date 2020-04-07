@@ -57,7 +57,7 @@ exprSet <- exprSet1 %>%
   select(GENE_SYMBOL, everything()) %>% #重新排列，
   mutate(rowMean =rowMeans(.[grep("GSM", names(.))])) %>% #求出平均数(这边的.真的是画龙点睛)
   arrange(desc(rowMean)) %>% #把表达量的平均值按从大到小排序
-  distinct(symbol,.keep_all = T) %>% # symbol留下第一个
+  distinct(GENE_SYMBOL,.keep_all = T) %>% # symbol留下第一个
   select(-rowMean) %>% #反向选择去除rowMean这一列
   
 
