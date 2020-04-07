@@ -60,4 +60,39 @@ exprSet <- exprSet1 %>%
   distinct(GENE_SYMBOL,.keep_all = T) %>% # symbol留下第一个
   select(-rowMean) %>% #反向选择去除rowMean这一列
   
+#######################################################################################################################################
+###############################################             4.差异分析                  ################################################
+#######################################################################################################################################
 
+#当获得了表达矩阵后，开始利用limma做差异分析
+library(limma)
+
+group_list<-c("LIF","LIF","LIF","LIF","mEpiSC","mEpiSC","mEpiSC","mEpiSC","t2i","t2i","t2i","t2i","t2iSB","t2iSB","t2iSB","t2iSB")
+group_list<-c("LIF","LIF","LIF","LIF","mEpiSC","mEpiSC","mEpiSC","mEpiSC")
+group_list
+design <- model.matrix(~0+factor(group_list))
+colnames(design)=levels(factor(group_list))
+rownames(design)=colnames(exprSet)
+
+contrast.matrix<-makeContrasts(LIF-mEpiSC,levels = c("LIF","mEpiSC"))
+
+contrast.matrix2<-makeContrasts(LIF-mEpiSC,levels = c("LIF","mEpiSC"))
+contrast.matrix<-makeContrasts(LIF-t2i,LIF-mEpiSC,LIF-t2iSB,t2i-mEpiSC,t2i-t2iSB,mEpiSC-t2iSB,levels = c("LIF","mEpiSC","t2i","t2iSB"))
+contrast.matrix<-makeContrasts(LIF-t2i,LIF-mEpiSC,LIF-t2iSB,t2i-mEpiSC,t2i-t2iSB,mEpiSC-t2iSB,levels = c("LIF","mEpiSC","t2i","t2iSB"))
+
+
+
+
+#Examples:makeContrasts(B-A,C-B,C-A,levels=c("A","B","C"))
+??fit
+##step1
+fit <- lmFit(exprSet_Lm,design)
+##step2
+fit2 <- contrasts.fit(fit, contrast.matrix) ##这一步很重要，大家可以自行看看效果
+fit2 <- eBayes(fit2)  ## default no trend !!!
+##eBayes() with trend=TRUE
+##step3
+tempOutput = topTable(fit2, coef=1, n=Inf)
+nrDEG = na.omit(tempOutput) 
+#write.csv(nrDEG2,"limma_notrend.results.csv",quote = F)
+head(nrDEG)
