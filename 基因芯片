@@ -1,69 +1,56 @@
 setwd("C:\\Users\\Administrator\\Desktop\\test")
-BiocManager::install("GEOquery")
 library(dplyr)
 library(tidyr)
 library(data.table)
 library(GEOquery)
-#下载基因芯片数据，且注意保存位置不要有中文名字，不然不能正常读取文件
+
+#######################################################################################################################################
+#####################################################       1.下载基因芯片数据     ######################################################
+#######################################################################################################################################
+
 GSE78144 <- getGEO('GSE78144', destdir="C:\\Users\\Administrator\\Desktop\\test"
                    ,GSEMatrix=TRUE
                    ,AnnotGPL=FALSE
                    ,getGPL=F)
+#注意保存位置不要有中文名字，不然不能正常读取文件
+
 #获取表达矩阵exprSet和注释信息pdata
 exprSet = exprs(GSE78144[[1]])
 pData=pData(GSE78144[[1]])
-
-#读取GPL数据（下载压缩包，先解压为soft文件，再导入）
 GPL78144_anno <-data.table::fread("GSE78144_family.soft",skip = "ID")
-#提取出ID和gene的对应列表
+
+#######################################################################################################################################
+#####################################                  2.获得探针ID和gene symbol的对应列表               ####################################
+#######################################################################################################################################
+
+
 probe2symbol_df <- GPL78144_anno %>% 
   select(ID,GENE_SYMBOL) %>% 
-  filter(GENE_SYMBOL != "") 
+  #这里的GENE_SYMBOL随不同的GPL名字不一样，甚至需要处理的操作也不一样，
+  #详见https://mp.weixin.qq.com/s?__biz=MzIyMzA2MTcwMg==&mid=2650732920&idx=1&sn=265f76c1d22240b55fc9b0bdfd74f3f1&chksm=f029aad1c75e23c7abdc42734a2e78cbf83f11f89344db9c97aa922584cf5b37334b040b182a&mpshare=1&scene=23&srcid=0407JhDs3m2nWRDF4sI3IQF9&sharer_sharetime=1586258214433&sharer_shareid=e30a14e2833191376bbf1cc003c8a139#rd
+  filter(GENE_SYMBOL != "") #删除掉空白的gene symbol
+write.csv(probe2symbol_df,"probe2symbol_df.csv") #导出该GPL与基因的对应列表（为了降低内存占用率）
+probe2symbol_df<-read.table("probe2symbol_df.csv",header = T,sep=",")
+probe2symbol_df<-probe2symbol_df[,-1] #删除无意义的第一列
+#可导可不导，如果上面这些文件占内存太大，导出后保存数据后，删除上述变量
 
-exprSet$probe_id 
-a<-rownames(exprSet)
+#调整exprSet，使其具有与probe2symbol_df同样的列名“ID”
+#具体方法是：由于exprSet rowname是ID号，需要提取到第一列，故导出后再导入
+write.csv(exprSet,"exprSet.csv")
+exprSet1<-read.table("exprSet.csv",header = T,sep=",")
+names(exprSet1)[1]<-"ID" #将之前的rowname改为第一列后，改成与probe2symbol_df同样的列名“ID”
 
-rownames(exprSet) <- names(probe2symbol_df)[1]
+#######################################################################################################################################
+##########################################             3.探针ID和基因的转换                  ############################################
+#######################################################################################################################################
 
-exprSet <- exprSet %>% 
-  
-  inner_join(probe2symbol_df,by="probe_id") %>% #合并探针的信息
-  
-  select(-probe_id) %>% #去掉多余信息
-  
-  select(symbol, everything()) %>% #重新排列，
-  
+exprSet <- exprSet1 %>% 
+  inner_join(probe2symbol_df,by="ID") %>% #合并探针的信息
+  select(-ID) %>% #去掉多余信息
+  select(GENE_SYMBOL, everything()) %>% #重新排列，
   mutate(rowMean =rowMeans(.[grep("GSM", names(.))])) %>% #求出平均数(这边的.真的是画龙点睛)
-  
   arrange(desc(rowMean)) %>% #把表达量的平均值按从大到小排序
-  
   distinct(symbol,.keep_all = T) %>% # symbol留下第一个
-  
   select(-rowMean) %>% #反向选择去除rowMean这一列
   
-  tibble::column_to_rownames(colnames(.)[1]) # 把第一列变成行名并删除
-
-------------------------------------------------------
-setwd("C:\\Users\\Administrator\\Desktop\\test")
-library(dplyr)
-library(tidyr)
-library(data.table)
-library(GEOquery)
-#下载基因芯片数据，且注意保存位置不要有中文名字，不然不能正常读取文件
-GSE78144 <- getGEO('GSE78144', destdir="C:\\Users\\Administrator\\Desktop\\test"
-                   ,GSEMatrix=TRUE
-                   ,AnnotGPL=FALSE
-                   ,getGPL=F)
-#获取表达矩阵exprSet和注释信息pdata
-exprSet = exprs(GSE78144[[1]])
-pData=pData(GSE78144[[1]])
-GPL78144_anno <-data.table::fread("GSE78144_family.soft",skip = "ID")
-#提取出ID和gene的对应列表
-probe2symbol_df <- GPL78144_anno %>% 
-  select(ID,GENE_SYMBOL) %>% 
-  filter(GENE_SYMBOL != "") 
-write.csv(probe2symbol_df,"probe2symbol_df.csv")
-write.csv(exprSet,"exprSet.csv")
-exprSet1<-read.table(exprSet.csv)
-exprSet$probe_id  <-a
 
