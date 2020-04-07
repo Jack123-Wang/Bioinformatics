@@ -23,12 +23,15 @@ GPL78144_anno <-data.table::fread("GSE78144_family.soft",skip = "ID")
 #####################################                  2.获得探针ID和gene symbol的对应列表               ####################################
 #######################################################################################################################################
 
+方法一：没有R包可以自动转换ID，自行下载NCBI的GPL.soft文件
+（方法详解来源：http://mp.weixin.qq.com/s?__biz=MzIyMzA2MTcwMg==&mid=2650732920&idx=1&sn=265f76c1d22240b55fc9b0bdfd74f3f1&chksm=f029aad1c75e23c7abdc42734a2e78cbf83f11f89344db9c97aa922584cf5b37334b040b182a&mpshare=1&scene=23&srcid=0407JhDs3m2nWRDF4sI3IQF9&sharer_sharetime=1586258214433&sharer_shareid=e30a14e2833191376bbf1cc003c8a139#rd）
 
 probe2symbol_df <- GPL78144_anno %>% 
   select(ID,GENE_SYMBOL) %>% 
   #这里的GENE_SYMBOL随不同的GPL名字不一样，甚至需要处理的操作也不一样，
   #详见https://mp.weixin.qq.com/s?__biz=MzIyMzA2MTcwMg==&mid=2650732920&idx=1&sn=265f76c1d22240b55fc9b0bdfd74f3f1&chksm=f029aad1c75e23c7abdc42734a2e78cbf83f11f89344db9c97aa922584cf5b37334b040b182a&mpshare=1&scene=23&srcid=0407JhDs3m2nWRDF4sI3IQF9&sharer_sharetime=1586258214433&sharer_shareid=e30a14e2833191376bbf1cc003c8a139#rd
   filter(GENE_SYMBOL != "") #删除掉空白的gene symbol
+  
 write.csv(probe2symbol_df,"probe2symbol_df.csv") #导出该GPL与基因的对应列表（为了降低内存占用率）
 probe2symbol_df<-read.table("probe2symbol_df.csv",header = T,sep=",")
 probe2symbol_df<-probe2symbol_df[,-1] #删除无意义的第一列
@@ -40,10 +43,14 @@ write.csv(exprSet,"exprSet.csv")
 exprSet1<-read.table("exprSet.csv",header = T,sep=",")
 names(exprSet1)[1]<-"ID" #将之前的rowname改为第一列后，改成与probe2symbol_df同样的列名“ID”
 
+方法二：利用R包转化ID
+可参考：https://github.com/jmzeng1314/my-R/blob/master/9-microarray-examples/GSE1462.R以及生信技能书视频
+
 #######################################################################################################################################
 ##########################################             3.探针ID和基因的转换                  ############################################
 #######################################################################################################################################
 
+来自方法一的转换：
 exprSet <- exprSet1 %>% 
   inner_join(probe2symbol_df,by="ID") %>% #合并探针的信息
   select(-ID) %>% #去掉多余信息
