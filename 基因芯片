@@ -1,0 +1,47 @@
+setwd("C:\\Users\\Administrator\\Desktop\\test")
+BiocManager::install("GEOquery")
+library(dplyr)
+library(tidyr)
+library(data.table)
+library(GEOquery)
+#下载基因芯片数据，且注意保存位置不要有中文名字，不然不能正常读取文件
+GSE78144 <- getGEO('GSE78144', destdir="C:\\Users\\Administrator\\Desktop\\test"
+                   ,GSEMatrix=TRUE
+                   ,AnnotGPL=FALSE
+                   ,getGPL=F)
+#获取表达矩阵exprSet和注释信息pdata
+exprSet = exprs(GSE78144[[1]])
+pData=pData(GSE78144[[1]])
+
+#读取GPL数据（下载压缩包，先解压为soft文件，再导入）
+GPL78144_anno <-data.table::fread("GSE78144_family.soft",skip = "ID")
+#提取出ID和gene的对应列表
+probe2symbol_df <- GPL78144_anno %>% 
+  select(ID,GENE_SYMBOL) %>% 
+  filter(GENE_SYMBOL != "") 
+
+exprSet$probe_id 
+a<-rownames(exprSet)
+
+rownames(exprSet) <- names(probe2symbol_df)[1]
+
+exprSet <- exprSet %>% 
+  
+  inner_join(probe2symbol_df,by="probe_id") %>% #合并探针的信息
+  
+  select(-probe_id) %>% #去掉多余信息
+  
+  select(symbol, everything()) %>% #重新排列，
+  
+  mutate(rowMean =rowMeans(.[grep("GSM", names(.))])) %>% #求出平均数(这边的.真的是画龙点睛)
+  
+  arrange(desc(rowMean)) %>% #把表达量的平均值按从大到小排序
+  
+  distinct(symbol,.keep_all = T) %>% # symbol留下第一个
+  
+  select(-rowMean) %>% #反向选择去除rowMean这一列
+  
+  tibble::column_to_rownames(colnames(.)[1]) # 把第一列变成行名并删除
+
+
+
