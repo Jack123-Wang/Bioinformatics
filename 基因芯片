@@ -67,7 +67,7 @@ exprSet <- exprSet1 %>%
 
 library(limma)
 #4.1准备矩阵(多组之间两两比较)
-#学习原代码为：https://github.com/jmzeng1314/my-R/blob/master/9-microarray-examples/illuminaHGv4/GSE30669_DEG.R?from=singlemessage&isappinstalled=0
+#模仿的原代码网址为：https://github.com/jmzeng1314/my-R/blob/master/9-microarray-examples/illuminaHGv4/GSE30669_DEG.R?from=singlemessage&isappinstalled=0
 #4.1.1制作分组矩阵design
 #IMPROTANT:sampleType内部文本的顺序要和exprSet的列名对应
 sampleType <- factor( c('LIF','LIF','LIF','LIF','mEpiSC','mEpiSC','mEpiSC','mEpiSC','t2i','t2i','t2i','t2i','t2iSB','t2iSB','t2iSB','t2iSB')  )
