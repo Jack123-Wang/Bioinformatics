@@ -17,18 +17,23 @@ GSE78144 <- getGEO('GSE78144', destdir="C:\\Users\\Administrator\\Desktop\\test"
 #获取表达矩阵exprSet和注释信息pdata
 exprSet = exprs(GSE78144[[1]])
 pData=pData(GSE78144[[1]])
-GPL78144_anno <-data.table::fread("GSE78144_family.soft",skip = "ID")
 
 #######################################################################################################################################
-#####################################                  2.获得探针ID和gene symbol的对应列表               ####################################
+#####################################                       2.探针ID和基因的转换                     ####################################
 #######################################################################################################################################
+方法一：利用R包转化ID
+可参考：https://github.com/jmzeng1314/my-R/blob/master/9-microarray-examples/GSE1462.R以及生信技能书视频
+方法一比较方便，故优先选择。
 
-方法一：没有R包可以自动转换ID，自行下载NCBI的GPL.soft文件
+方法二：当没有R包可以自动转换ID，需要我们自行下载NCBI的GPL.soft文件
 （方法详解来源：http://mp.weixin.qq.com/s?__biz=MzIyMzA2MTcwMg==&mid=2650732920&idx=1&sn=265f76c1d22240b55fc9b0bdfd74f3f1&chksm=f029aad1c75e23c7abdc42734a2e78cbf83f11f89344db9c97aa922584cf5b37334b040b182a&mpshare=1&scene=23&srcid=0407JhDs3m2nWRDF4sI3IQF9&sharer_sharetime=1586258214433&sharer_shareid=e30a14e2833191376bbf1cc003c8a139#rd）
 
+###################################               1.获得探针ID和Gene symbol的对应列表             ######################################
+
+GPL78144_anno <-data.table::fread("GSE78144_family.soft",skip = "ID")
 probe2symbol_df <- GPL78144_anno %>% 
   select(ID,GENE_SYMBOL) %>% 
-  #这里的GENE_SYMBOL随不同的GPL名字不一样，甚至需要处理的操作也不一样，
+  #这里的GENE_SYMBOL随不同的GPL名字不一样，甚至需要处理的操作也不一样，所以对“GENE_SYMBOL”参数的调整需要依赖于GPL的类型
   #详见https://mp.weixin.qq.com/s?__biz=MzIyMzA2MTcwMg==&mid=2650732920&idx=1&sn=265f76c1d22240b55fc9b0bdfd74f3f1&chksm=f029aad1c75e23c7abdc42734a2e78cbf83f11f89344db9c97aa922584cf5b37334b040b182a&mpshare=1&scene=23&srcid=0407JhDs3m2nWRDF4sI3IQF9&sharer_sharetime=1586258214433&sharer_shareid=e30a14e2833191376bbf1cc003c8a139#rd
   filter(GENE_SYMBOL != "") #删除掉空白的gene symbol
   
@@ -37,20 +42,15 @@ probe2symbol_df<-read.table("probe2symbol_df.csv",header = T,sep=",")
 probe2symbol_df<-probe2symbol_df[,-1] #删除无意义的第一列
 #可导可不导，如果上面这些文件占内存太大，导出后保存数据后，删除上述变量
 
-#调整exprSet，使其具有与probe2symbol_df同样的列名“ID”
+#为了是后续代码成功转化探针ID和基因的关系，故需要调整exprSet，使其具有与probe2symbol_df同样的列名“ID”
 #具体方法是：由于exprSet rowname是ID号，需要提取到第一列，故导出后再导入
 write.csv(exprSet,"exprSet.csv")
 exprSet1<-read.table("exprSet.csv",header = T,sep=",")
-names(exprSet1)[1]<-"ID" #将之前的rowname改为第一列后，改成与probe2symbol_df同样的列名“ID”
+names(exprSet1)[1]<-"ID" #将之前的rowname改为第一列后，改成与probe2symbol_df同样的列名“ID”，至此就做好了探针ID和基因转化的准备工作。
 
-方法二：利用R包转化ID
-可参考：https://github.com/jmzeng1314/my-R/blob/master/9-microarray-examples/GSE1462.R以及生信技能书视频
 
-#######################################################################################################################################
-##########################################             3.探针ID和基因的转换                  ############################################
-#######################################################################################################################################
+########################################               2.探针ID和基因的转换             ################################################
 
-来自方法一的转换：
 exprSet <- exprSet1 %>% 
   inner_join(probe2symbol_df,by="ID") %>% #合并探针的信息
   select(-ID) %>% #去掉多余信息
@@ -59,40 +59,44 @@ exprSet <- exprSet1 %>%
   arrange(desc(rowMean)) %>% #把表达量的平均值按从大到小排序
   distinct(GENE_SYMBOL,.keep_all = T) %>% # symbol留下第一个
   select(-rowMean) %>% #反向选择去除rowMean这一列
-  
+
+
 #######################################################################################################################################
-###############################################             4.差异分析                  ################################################
+###############################################             3.差异分析                  ################################################
 #######################################################################################################################################
 
-#当获得了表达矩阵后，开始利用limma做差异分析
 library(limma)
-
-group_list<-c("LIF","LIF","LIF","LIF","mEpiSC","mEpiSC","mEpiSC","mEpiSC","t2i","t2i","t2i","t2i","t2iSB","t2iSB","t2iSB","t2iSB")
-group_list<-c("LIF","LIF","LIF","LIF","mEpiSC","mEpiSC","mEpiSC","mEpiSC")
-group_list
-design <- model.matrix(~0+factor(group_list))
-colnames(design)=levels(factor(group_list))
-rownames(design)=colnames(exprSet)
-
-contrast.matrix<-makeContrasts(LIF-mEpiSC,levels = c("LIF","mEpiSC"))
-
-contrast.matrix2<-makeContrasts(LIF-mEpiSC,levels = c("LIF","mEpiSC"))
-contrast.matrix<-makeContrasts(LIF-t2i,LIF-mEpiSC,LIF-t2iSB,t2i-mEpiSC,t2i-t2iSB,mEpiSC-t2iSB,levels = c("LIF","mEpiSC","t2i","t2iSB"))
-contrast.matrix<-makeContrasts(LIF-t2i,LIF-mEpiSC,LIF-t2iSB,t2i-mEpiSC,t2i-t2iSB,mEpiSC-t2iSB,levels = c("LIF","mEpiSC","t2i","t2iSB"))
-
-
-
-
+#4.1准备矩阵(多组之间两两比较)
+#学习原代码为：https://github.com/jmzeng1314/my-R/blob/master/9-microarray-examples/illuminaHGv4/GSE30669_DEG.R?from=singlemessage&isappinstalled=0
+#4.1.1制作分组矩阵design
+#IMPROTANT:sampleType内部文本的顺序要和exprSet的列名对应
+sampleType <- factor( c('LIF','LIF','LIF','LIF','mEpiSC','mEpiSC','mEpiSC','mEpiSC','t2i','t2i','t2i','t2i','t2iSB','t2iSB','t2iSB','t2iSB')  )
+design <- model.matrix(~0+  sampleType )
+colnames(design) <-  levels(sampleType)
+#4.1.2制作比较矩阵cont.matrix
+#矩阵名称中不允许有数值作为开头，故在2i和2iSB前加了字母t，“t”无实际含义。
+limmaArg='LIF-t2i,LIF-mEpiSC,LIF-t2iSB,t2i-mEpiSC,t2i-t2iSB,mEpiSC-t2iSB'
+contrastsCommand=unlist(strsplit(limmaArg, split=","))
+cont.matrix <- makeContrasts(contrasts=contrastsCommand, levels=design)
 #Examples:makeContrasts(B-A,C-B,C-A,levels=c("A","B","C"))
-??fit
+
+#4.2差异分析
 ##step1
-fit <- lmFit(exprSet_Lm,design)
+fit <- lmFit(exprSet,design) #将exprSet和design分组矩阵对应，所以之前的分组矩阵的设定至关重要。
 ##step2
-fit2 <- contrasts.fit(fit, contrast.matrix) ##这一步很重要，大家可以自行看看效果
+fit2 <- contrasts.fit(fit, cont.matrix) ##这一步很重要，大家可以自行看看效果
 fit2 <- eBayes(fit2)  ## default no trend !!!
-##eBayes() with trend=TRUE
-##step3
-tempOutput = topTable(fit2, coef=1, n=Inf)
-nrDEG = na.omit(tempOutput) 
-#write.csv(nrDEG2,"limma_notrend.results.csv",quote = F)
-head(nrDEG)
+options(digits = 4) 
+
+#step3:批量导出差异结果矩阵
+for(i in 1:length(contrastsCommand)){
+  tempOutFile <- paste("GSE78144",".diffexp.", contrastsCommand[i],".csv", sep="")
+  tempOutput = topTable(fit2, coef=i, n=Inf)
+  tempOutput = na.omit(tempOutput) 
+  tempOutput$geneSymbol=rownames(tempOutput) #在tempOutput加上一列gene symbol
+  #由于导入的exprSet是探针ID已经转化过到gene symbol上了，故不需要像原代码一样在这里转化ID，转换ID的过程详见步骤3
+  write.csv(tempOutput,tempOutFile,quote=FALSE,row.names = F)
+}
+
+head(tempOutput)
+
