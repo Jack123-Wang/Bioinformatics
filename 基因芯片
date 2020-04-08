@@ -60,9 +60,64 @@ exprSet <- exprSet1 %>%
   distinct(GENE_SYMBOL,.keep_all = T) %>% # symbol留下第一个
   select(-rowMean) %>% #反向选择去除rowMean这一列
 
+#######################################################################################################################################
+###############################################            3.可视化/质量控制                  ################################################
+#######################################################################################################################################
+
+
+#3.质量控制（对表达矩阵进行可视化处理）
+#模仿代码网址：http://bio-info-trainee.com/tmp/basic_visualization_for_expression_matrix.html 
+#为了画箱式图、小提琴图、组图和密度图，需要利用reshape 对表达矩阵进行调整
+library(reshape2)
+#reshape2的详解：https://blog.csdn.net/QimaoRyan/article/details/76066589
+exprSet_L=melt(exprSet) #进行melt融化时，列表中至少有一项时文本信息作为measure.vars，故需要在第一列建立一个gene symbol
+head(exprSet_L)
+colnames(exprSet_L)=c('gene_symbol','sample','value')
+sampleType <- factor( c('LIF','LIF','LIF','LIF','mEpiSC','mEpiSC','mEpiSC','mEpiSC','t2i','t2i','t2i','t2i','t2iSB','t2iSB','t2iSB','t2iSB')  )
+exprSet_L$group=rep(sampleType,each=nrow(exprSet))
+library(ggplot2)
+#箱式图
+p=ggplot(exprSet_L,aes(x=sample,y=value,fill=group))+geom_boxplot()
+print(p)
+#小提琴图
+p=ggplot(exprSet_L,aes(x=sample,y=value,fill=group))+geom_violin()
+print(p)
+#组图（histogram)
+p=ggplot(exprSet_L,aes(value,fill=group))+geom_histogram(bins = 200)+facet_wrap(~sample, nrow = 4)
+print(p)
+#密度图（density)
+p=ggplot(exprSet_L,aes(value,col=group))+geom_density()+facet_wrap(~sample, nrow = 4)
+print(p)
+
+
+#cluster
+out.dist=dist(t(exprSet),method='euclidean')#这里的exprSet要求为数字矩阵，无文本信息，故需要去掉第一列的gene symbol
+out.hclust=hclust(out.dist,method='complete')
+plot(out.hclust)
+
+#PCA
+pc <- prcomp(t(exprSet),scale=TRUE)
+pcx=data.frame(pc$x)
+pcr=cbind(samples=rownames(pcx),group_list, pcx) 
+p=ggplot(pcr, aes(PC1, PC2))+geom_point(size=5, aes(color=group_list)) +
+  geom_text(aes(label=samples),hjust=-0.1, vjust=-0.3)
+print(p)
+
+#heatmap
+choose_gene=names(sort(apply(exprSet, 1, mad),decreasing = T)[1:50])
+choose_matrix=exprSet[choose_gene,]
+choose_matrix=scale(choose_matrix)
+heatmap(choose_matrix)
+library(gplots)
+heatmap.2(choose_matrix)
+library(pheatmap)
+pheatmap(choose_matrix)
+
+
+
 
 #######################################################################################################################################
-###############################################             3.差异分析                  ################################################
+###############################################             4.差异分析                  ################################################
 #######################################################################################################################################
 
 ####################
