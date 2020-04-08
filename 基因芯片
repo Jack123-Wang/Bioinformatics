@@ -164,6 +164,20 @@ for(i in 1:length(contrastsCommand)){
 }
 
 head(tempOutput)
+##               logFC  AveExpr         t      P.Value  adj.P.Val        B
+## 39400_at -1.0284628 5.620700 -5.835799 8.340576e-06 0.03344118 3.233915
+## 36131_at  0.9888221 9.954273  5.771526 9.667514e-06 0.03344118 3.116707
+## 33791_at  1.8301554 6.950685  5.736161 1.048765e-05 0.03344118 3.051940
+## 1303_at  -1.3835699 4.463438 -5.731733 1.059523e-05 0.03344118 3.043816
+## 36122_at  0.7801404 7.259612  5.141064 4.205709e-05 0.10619415 1.934581
+## 36939_at  2.5471980 6.915045  5.038301 5.362353e-05 0.11283285 1.736846
+
+#每一个表头的含义如下：
+#The logFC column gives the value of the contrast. Usually this represents a log2-fold change between two or more experimental conditions although sometimes it represents a log2-expression level. 
+#The AveExpr column gives the average log2-expression level for that gene across all the arrays and channels in the experiment. 
+#Column t is the moderated t-statistic. 
+#Column P.Value is the associated p-value and adj.P.Value is the p-value adjusted for multiple testing. 
+#The most popular form of adjustment is "BH" which is Benjamini and Hochberg’s method to control the false discovery rate [1].
 
 #一般为了验证有没有比反，或者验证操作有无失误，我们选择管家基因和Top基因来做出判断：
 #例如：
