@@ -125,11 +125,11 @@ pheatmap(choose_matrix)
 
 ####################
 A-B的含义
-两组之间的比较的代码
+R 20道题
 ####################
 library(limma)
-#4.1准备矩阵(多组之间两两比较)
-#模仿的原代码网址为：https://github.com/jmzeng1314/my-R/blob/master/9-microarray-examples/illuminaHGv4/GSE30669_DEG.R?from=singlemessage&isappinstalled=0
+#4.1准备矩阵(多组之间两两比较；两组比较的代码https://vip.biotrainee.com/d/116-limma)
+#多组之间两两比较的代码，模仿网址：https://github.com/jmzeng1314/my-R/blob/master/9-microarray-examples/illuminaHGv4/GSE30669_DEG.R?from=singlemessage&isappinstalled=0
 #4.1.1制作分组矩阵design
 #IMPROTANT:sampleType内部文本的顺序要和exprSet的列名对应
 sampleType <- factor( c('LIF','LIF','LIF','LIF','mEpiSC','mEpiSC','mEpiSC','mEpiSC','t2i','t2i','t2i','t2i','t2iSB','t2iSB','t2iSB','t2iSB')  )
@@ -141,6 +141,9 @@ limmaArg='LIF-t2i,LIF-mEpiSC,LIF-t2iSB,t2i-mEpiSC,t2i-t2iSB,mEpiSC-t2iSB'
 contrastsCommand=unlist(strsplit(limmaArg, split=","))
 cont.matrix <- makeContrasts(contrasts=contrastsCommand, levels=design)
 #Examples:makeContrasts(B-A,C-B,C-A,levels=c("A","B","C"))
+####  在"A-B"的意思是指A的表达量是B的多少倍，一般A为实验组，B为对照组
+####  cont.matrix里的"1"代表实验组，"-1"代表对照组，即比较关系为"1"比“-1”
+
 
 #4.2差异分析
 ##step1
@@ -162,3 +165,8 @@ for(i in 1:length(contrastsCommand)){
 
 head(tempOutput)
 
+#一般为了验证有没有比反，或者验证操作有无失误，我们选择管家基因和Top基因来做出判断：
+#例如：
+exprSet['GAPDH',]
+exprSet['ACTB',]
+exprSet['XX Top1 gene name XX',]
