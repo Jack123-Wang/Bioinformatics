@@ -124,9 +124,10 @@ pheatmap(choose_matrix)
 #######################################################################################################################################
 
 ####################
-A-B的含义
 R 20道题
 ####################
+#附limma R包说明书：http://www.bioconductor.org/packages/release/bioc/vignettes/limma/inst/doc/usersguide.pdf
+
 library(limma)
 #4.1准备矩阵(多组之间两两比较；两组比较的代码https://vip.biotrainee.com/d/116-limma)
 #多组之间两两比较的代码，模仿网址：https://github.com/jmzeng1314/my-R/blob/master/9-microarray-examples/illuminaHGv4/GSE30669_DEG.R?from=singlemessage&isappinstalled=0
