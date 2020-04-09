@@ -1,5 +1,3 @@
-![image](https://github.com/Jack123-Wang/Bioinformatics/blob/master/ggPlot2/png/1.png)
-
 setwd("C:\\Users\\Administrator\\Desktop\\生信分析记录\\FPKM计算\\output（ggplot2）")
 
 #合并基因表达矩阵dat和基因长度gen_len为dat2
