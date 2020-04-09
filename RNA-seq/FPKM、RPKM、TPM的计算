@@ -28,6 +28,7 @@ countDf <- read.table("test.txt",header = T)
 #中提到FLD，和有效长度的概念，尚未研究清楚，暂时使用例子中的数值※※a
 #ssume a mean(FLD) = 203.7
 countDf$effLength <- countDf$length - 203.7 + 1
+#如果后面出现TPM或FPKM出现NA，则说明FLD过大，导致有些effLength小于0
 
 #2.2创建函数
 countToTpm <- function(counts, effLen)
