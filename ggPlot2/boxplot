@@ -6,6 +6,8 @@ Excel的处理:
 （2）用vlookup调用数据库得到每个基因集的y轴数值，且去掉NA（第二列）
 （3）在每个基因集标上相应type（第三列）
 （4）将多个基因集的第二列和第三列纵向合并到一个数据框中，并另存为.txt文件
+#或者使用reshape2 R包里的melt函数！
+
 
 setwd("C:\\Users\\Administrator\\Desktop\\生信分析记录\\ggplot2（3.11-3.15)\\mESC筛库_output\\累计分布函数、箱式图")
 test1<- read.table("box.txt",header = TRUE)
