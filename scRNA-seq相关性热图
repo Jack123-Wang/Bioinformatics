@@ -1,0 +1,65 @@
+library("dplyr")
+setwd("F:\\生信分析\\※※数据库\\别人家的数据※※")
+#1.准备scRNA-seq表达矩阵
+#1.1导入scRNA数据
+data<-read.table("scRNA.txt")
+#1.2去除低表达的基因
+data_high<-data[apply(data, 1, function(x) {sum(x>1) > floor(ncol(data)/1000)}),] 
+#100是可以调整的，如果数字过低，会导致筛到相对高表达的基因过低。
+dim (data)
+dim (data_high) #查看还剩下多少基因
+#提取筛选后数据中的第一列基因集
+data_v1<-select(data_high,1) #select是dplyr R包的函数
+data_v1<-toupper(as.character(data_v1$V1))
+#1.3将第一列基因名转为列名rownames
+#将第一列命名为列名称
+rownames(data_high)=data_v1
+#去除第一列，第二列为第一列
+data_high=data_high[,-1]
+
+#2.准备相关性热图的基因集
+#2.1导入每个基因集的基因（并做大写）
+Le<-read.table("Lethal.txt",header = T)
+Le<-Le$Lethal
+Le<-toupper(Le)
+
+Mo<-read.table("Module.txt",header = T)
+Mo<-Mo$Module
+Mo<-toupper(Mo)
+
+NOS<-read.table("NOS.txt",header = T)
+NOS<-NOS$NOS
+NOS<-toupper(NOS)
+
+Pro<-read.table("Proliferation.txt",header = T)
+Pro<-Pro$Proliferation
+Pro<-toupper(Pro)
+#2.2筛选掉基因集中与scRNA-seq尚未匹配的基因
+Le=Le[Le%in%data_v1] #(%in%是判断前者是否在后者的范围内并给出True或False，在中括号下其意义为保留True的内容)
+Mo=Mo[Mo%in%data_v1]
+NOS=NOS[NOS%in%data_v1]
+Pro=Pro[Pro%in%data_v1]
+
+#3.计算每个基因集的colmean
+#Le
+ng<-data_high[match(Le,data_v1),1]
+Le_Mean=colMeans(data_high[ng,])
+
+#Mo
+ng<-data_high[match(Mo,data_v1),1]
+Mo_Mean=colMeans(data_high[ng,])
+
+#NOS
+ng<-data_high[match(NOS,data_v1),1]
+NOS_Mean=colMeans(data_high[ng,])
+
+#Pro
+ng<-data_high[match(Pro,data_v1),1]
+Pro_Mean=colMeans(data_high[ng,])
+
+dat=data.frame(Le=Le_Mean,
+               Mo=Mo_Mean,
+               NOS=NOS_Mean,
+               Pro=Pro_Mean)
+M=cor(dat)
+pheatmap::pheatmap(M)
