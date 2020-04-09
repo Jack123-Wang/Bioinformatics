@@ -1,0 +1,8 @@
+#利用dplyr的filter函数筛选>或小于0.5的数据
+dat_expr_top<-dat_expr %>%filter(ESC>=0.5)
+
+#合并数据数据
+dat_screen1T<-merge(dat_Screen1,dat_expr_top,by="Gene_Symbol")
+
+#挑选数据框中的个别列
+dat_screen1T<-select(dat_screen1T,Gene_Symbol,control_mean,treat_mean)
