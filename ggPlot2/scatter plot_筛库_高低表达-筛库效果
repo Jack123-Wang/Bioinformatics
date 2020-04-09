@@ -1,5 +1,9 @@
 setwd("C:\\Users\\Administrator\\Desktop\\生信分析记录\\FPKM计算\\output（ggplot2）")
 
+###############################################################################################################################################
+#######################################           来源一：FPKM未处理           ################################################################## 
+################################################################################################################################################
+
 #合并基因表达矩阵dat和基因长度gen_len为dat2
 dat<-read.table("GSE78144 gene expression matrix.csv",header = T,sep=",")
 dat<-dat[,c(1:5)]
@@ -58,3 +62,46 @@ p <- ggplot()
 p + geom_point(data = test2, mapping = aes(x = control_mean, y = treat_mean),size=1,color="red")+ 
   labs(title="FPKM more than 0.5", x="control_mean", y="treat_mean") +
   ylim(0,1000)+xlim(0,1000)
+
+###############################################################################################################################################
+#######################################           来源二：FPKM处理后的数据           ################################################################## 
+################################################################################################################################################
+
+setwd("F:\\生信分析\\※※数据库\\别人家的数据※※\\GSE44067（RNA-seq_mESC_LIF)")
+
+#dat_expr是FPKM处理后的数据
+dat_expr<-read.table("GSE44067_ESC expression.txt",header = T)
+
+#dat_Screen是我们自己的筛库数据
+dat_Screen<-read.table("C:\\Users\\Administrator\\Desktop\\生信分析记录\\课题：mESC筛库（YM）\\原始数据\\Input_vs_total.sgrna_summary.xls"
+                       ,header=T)
+names(dat_expr)=c("Gene_Symbol","ESC")
+library(dplyr)
+dat_Screen1<-select(dat_Screen,Gene,control_mean,treat_mean)
+names(dat_Screen1)[1]<-"Gene_Symbol"
+
+#利用dplyr的filter函数筛选>或小于0.5的数据
+dat_expr_top<-dat_expr %>%filter(ESC>=0.5)
+dat_expr_low<-dat_expr %>%filter(ESC<=0.5)
+
+#以gene symbol为索引合并将两个数据共有的数据
+dat_screen1T<-merge(dat_Screen1,dat_expr_top,by="Gene_Symbol")
+dat_screen1T<-select(dat_screen1T,Gene_Symbol,control_mean,treat_mean)
+
+dat_screen1D<-merge(dat_Screen1,dat_expr_low,by="Gene_Symbol")
+dat_screen1D<-select(dat_screen1D,Gene_Symbol,control_mean,treat_mean)
+
+library(ggplot2)
+p <- ggplot()
+#散点图+X/Y轴的名称修改；
+p + geom_point(data = dat_screen1D, mapping = aes(x = control_mean, y = treat_mean),size=1,color="blue")+ 
+  labs(title="FPKM less than 0.5", x="control_mean", y="treat_mean") +
+  ylim(0,1000)+xlim(0,1000)+scale_x_log10()+scale_y_log10()
+
+p <- ggplot()
+#散点图+X/Y轴的名称修改；
+p + geom_point(data = dat_screen1T, mapping = aes(x = control_mean, y = treat_mean),size=1,color="red")+ 
+  labs(title="FPKM more than 0.5", x="control_mean", y="treat_mean") +
+  ylim(0,1000)+xlim(0,1000)+scale_x_log10()+scale_y_log10()
+
+
