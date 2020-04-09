@@ -1,0 +1,8 @@
+#GSE78144包含了LIF、2i、EpiSC、2iSB四种状态下的表达谱（Microarry）
+
+dat<-read.table("GSE78144 gene expression matrix.csv",header = T,sep=",")
+dat<-dat[,c(1:5)]
+dat$aver<-rowMeans(dat[,c(2:5)])
+dat<-dat[,c(-2:-5)]
+names(dat)<-(c("Gene_Symbol","LIF_Aver"))
+write.csv(dat,"GSE78144_Lif.csv")
