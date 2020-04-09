@@ -1,0 +1,24 @@
+BiocManager::install("biomaRt")
+library('biomaRt')
+#利用useMart获取人和鼠的基因数据库
+human<-useMart("ensembl",dataset="hsapiens_gene_ensembl")
+class(human)
+mouse<-useMart("ensembl",dataset="mmusculus_gene_ensembl")
+#useMart一般后面跟两个参数，第一个参数是借助ensemble数据库，第二个参数是告诉选择哪个物种的数据集。
+
+#测试基因集
+genes = c("Zfp286", "Tmx2")
+
+#小鼠基因映射到人
+genes=getLDS(attributes=c("mgi_symbol"),filters = "mgi_symbol",
+             values = genes,mart=mouse,
+             attributesL = c("hgnc_symbol","chromosome_name","start_position"),
+             martL = human,
+             uniqueRows = T)
+#attributesL代表的是我们需要同源转化的另外一个数据库，这里我们自然是由小鼠转为人，选择的就是需要连接到的人的Mart对象，在属性参数里面我们填写了三个参数，分别是gene_symbol ,染色体位置，基因起始位位
+
+#attributes属性参数： 代表我们所要检索的数据集的属性参数，比如这里我们用的是mgi_symbol，代表的就是小鼠的基因的symbol名字。可以使用listAttributes函数检索可能的属性列表。
+#Filter参数过滤器在查询中使用的过滤器。这些过滤器将应用于主数据集。可以使用函数listFilters检索可能的过滤器列表。
+#Value代表我们想要输入的数据集，就是输入我们构造的要查询的向量。
+#useMartL参数是代表我们需要链接的Mart对象，这里自然就是人的。
+#Mart指的是输入数据的Mart对象，由于输入数据是小鼠的基因，自然选择的Mart对象为小鼠。
