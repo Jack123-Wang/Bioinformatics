@@ -23,5 +23,10 @@ dat=read.csv("mESC多能性数据.csv",fill=T,header=TRUE,na.strings="",stringsA
 dat_name<-names(dat)
 
 for(i in 1:22) {
-  assign(dat_name[i],na.omit(dat[dat_name[i]]))
+  a=dat[dat_name[i]]
+  write.table(a,"a.csv",col.names = FALSE,row.names = F)
+  b=read.csv("a.csv",header=F)
+  b=as.character(b$V1)
+  assign(dat_name[i],b)
 }
+
