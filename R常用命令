@@ -1,12 +1,19 @@
-#利用dplyr的filter函数筛选>或小于0.5的数据
+#1.利用dplyr的filter函数筛选>或小于0.5的数据
 dat_expr_top<-dat_expr %>%filter(ESC>=0.5)
 
-#合并数据数据
+#2.合并数据数据
 dat_screen1T<-merge(dat_Screen1,dat_expr_top,by="Gene_Symbol")
 
-#挑选数据框中的个别列
+#3.挑选数据框中的个别列
 dat_screen1T<-select(dat_screen1T,Gene_Symbol,control_mean,treat_mean)
 
-#导入不对齐的表格，且不转换为factor(一定用read.csv，而不是.
-dat=read.csv("mESC多能性数据.txt",fill=T,header=TRUE,stringsAsFactors=F)
+#4.导入不对齐的表格，且不转换为factor(一定用read.csv，而不是.table),提取其中一列信息
+
+dat=read.csv("mESC多能性数据.csv",fill=T,header=TRUE,na.strings="",stringsAsFactors=F)
+
+#fill=T,从一个电子表格中导出的文件通常会把拖尾的空字段忽略掉。为了读取这样的文件，必须设置参数 fill = TRUE
+#默认情况下，文件是假定用 NA 表示缺损值，但是，这可以通过参数 na.strings 改变。na.string=""，指无内容的空格也被认定为NA。进而通过后续na.omit去除掉
+
+dat1<-dat$human同源基因
+dat1<-na.omit(dat1)
 
