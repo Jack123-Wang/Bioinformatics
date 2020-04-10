@@ -17,3 +17,11 @@ dat=read.csv("mESC多能性数据.csv",fill=T,header=TRUE,na.strings="",stringsA
 dat1<-dat$human同源基因
 dat1<-na.omit(dat1)
 
+#5.提取data.frame的每一列，并给与一个新变量
+setwd("C:\\Users\\Administrator\\Desktop")
+dat=read.csv("mESC多能性数据.csv",fill=T,header=TRUE,na.strings="",stringsAsFactors=F)
+dat_name<-names(dat)
+
+for(i in 1:22) {
+  assign(dat_name[i],na.omit(dat[dat_name[i]]))
+}
