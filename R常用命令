@@ -7,6 +7,6 @@ dat_screen1T<-merge(dat_Screen1,dat_expr_top,by="Gene_Symbol")
 #挑选数据框中的个别列
 dat_screen1T<-select(dat_screen1T,Gene_Symbol,control_mean,treat_mean)
 
-#导入不对齐的表格，且不转换为factor
-dat=read.table("mESC多能性数据.txt",fill=T,header=TRUE,stringsAsFactors=F)
+#导入不对齐的表格，且不转换为factor(一定用read.csv，而不是.
+dat=read.csv("mESC多能性数据.txt",fill=T,header=TRUE,stringsAsFactors=F)
 
