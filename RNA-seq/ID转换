@@ -1,9 +1,10 @@
 #基因ID转换
-BiocManager::install('org.Hs.eg.db') 
-suppressMessages(library(org.Hs.eg.db)) 
+BiocManager::install('org.Mm.eg.db') 
+suppressMessages(library(org.Mm.eg.db)) 
+#org.Mm.eg.db（鼠）或者org.Hs.eg.db（人）
 
 
-ID<-select(org.Hs.eg.db, keys=b, columns=c("ENSEMBL","UNIGENE","ENTREZID","CHR","GO","GENENAME"), keytype="SYMBOL")
+ID<-select(org.Mm.eg.db, keys=b, columns=c("ENSEMBL","UNIGENE","ENTREZID","CHR","GO","GENENAME"), keytype="SYMBOL")
 #keys负责添加需要转换的基因列表，格式：文本符号（chr）
 #column内的内容是转换后得到ID的列名内容（从第二列），第一列是keytype的类型。即我们想要转化为什么格式，就在colunmn输入什么格式。
 #column的内容一般不要动，如果内容过少，会出问题。
