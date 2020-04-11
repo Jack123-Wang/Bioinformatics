@@ -1,0 +1,25 @@
+#基因ID转换
+BiocManager::install('org.Hs.eg.db') 
+suppressMessages(library(org.Hs.eg.db)) 
+
+
+ID<-select(org.Hs.eg.db, keys=b, columns=c("ENSEMBL","UNIGENE","ENTREZID","CHR","GO","GENENAME"), keytype="SYMBOL")
+#keys负责添加需要转换的基因列表，格式：文本符号（chr）
+#column内的内容是转换后得到ID的列名内容（从第二列），第一列是keytype的类型。即我们想要转化为什么格式，就在colunmn输入什么格式。
+#column的内容一般不要动，如果内容过少，会出问题。
+#keytype负责说明key后面的基因列表的ID类型是什么
+
+ID2<-ID[c("SYMBOL","ENSEMBL")]
+ID2<-unique(ID2)
+#由于ID得到的列名太多，提出我们想要的两列，并去除重复值
+
+b<-na.omit(b)
+
+keytypes(org.Hs.eg.db)
+##  [1] "ENTREZID"     "PFAM"         "IPI"          "PROSITE"
+##  [5] "ACCNUM"       "ALIAS"        "ENZYME"       "MAP"
+##  [9] "PATH"         "PMID"         "REFSEQ"       "SYMBOL"
+##  [13] "UNIGENE"      "ENSEMBL"      "ENSEMBLPROT"  "ENSEMBLTRANS"
+##  [17] "GENENAME"     "UNIPROT"      "GO"           "EVIDENCE"
+##  [21] "ONTOLOGY"     "GOALL"        "EVIDENCEALL"  "ONTOLOGYALL"
+##  [25] "OMIM"         "UCSCKG"
