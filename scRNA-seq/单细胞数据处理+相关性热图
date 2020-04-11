@@ -67,3 +67,47 @@ dat=data.frame(Le=Le_Mean,
                Pro=Pro_Mean)
 M=cor(dat)
 pheatmap::pheatmap(M)
+
+
+
+---------------------------------------------------------------------------------------------------------------------------------------
+Newmethod
+
+library("dplyr")
+library("edgeR")
+#1.准备scRNA-seq表达矩阵
+#1.1导入scRNA数据
+data<-read.table("scRNA.txt")
+
+#1.2去除低表达的基因
+data_high<-data[apply(data, 1, function(x) {sum(x>1) > floor(ncol(data)/1000)}),] 
+#100是可以调整的，如果数字过低，会导致筛到相对高表达的基因过低。
+dim (data)
+dim (data_high) #查看还剩下多少基因
+#提取筛选后数据中的第一列基因集
+data_v1<-select(data_high,1) #select是dplyr R包的函数
+data_v1<-toupper(as.character(data_v1$V1))
+#1.3将第一列基因名转为列名rownames
+#将第一列命名为列名称
+rownames(data_high)=data_v1
+#去除第一列，第二列为第一列
+data_high=data_high[,-1]
+#1.4利用edgeR消除文库大小差异
+data_high<-log2(edgeR::cpm(data_high)+1)
+dim (data_high)
+
+
+dat=read.csv("mESC多能性数据.csv",fill=T,header=TRUE,na.strings="",stringsAsFactors=F)
+dat_name<-names(dat)
+
+for(i in 1:22) {
+  i=3
+  a=dat[dat_name[i]]
+  write.table(a,"a.csv",col.names = FALSE,row.names = F)
+  b=read.csv("a.csv",header=F)
+  b=toupper(b$V1) #toupper可将列表转换为chr
+  b=b[b%in%data_v1] #二者必须均是chr，才可以成功
+  ng<-data_high[match(b,data_v1),1]
+  #Le_Mean<-colMeans(data_high[ng,])
+  assign(paste("G",i,sep=""),colMeans(data_high[ng,]))
+}
