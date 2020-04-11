@@ -70,8 +70,10 @@ pheatmap::pheatmap(M)
 
 
 
----------------------------------------------------------------------------------------------------------------------------------------
-Newmethod
+#######################################################################################################################################
+###############################################        New method(批量处理数据）         ###############################################
+#######################################################################################################################################
+setwd("C:\\Users\\Administrator\\Desktop")
 
 library("dplyr")
 library("edgeR")
@@ -96,18 +98,34 @@ data_high=data_high[,-1]
 data_high<-log2(edgeR::cpm(data_high)+1)
 dim (data_high)
 
-
+#2.准备基因集
 dat=read.csv("mESC多能性数据.csv",fill=T,header=TRUE,na.strings="",stringsAsFactors=F)
 dat_name<-names(dat)
+#利用for循环批量形成基因集，并计算形成数据库（i=1,和2：22在dataM有差别，故分别跑)
+i=1
+a=dat[dat_name[i]]
+write.table(a,"a.csv",col.names = FALSE,row.names = F)
+b=read.csv("a.csv",header=F)
+b=toupper(b$V1) #toupper可将列表转换为chr
+b=b[b%in%data_v1] #二者必须均是chr，才可以成功
+ng<-data_high[match(b,data_v1),1]
+dataM<-ng
 
-for(i in 1:22) {
-  i=3
+for(i in 2:22) {
+  
   a=dat[dat_name[i]]
   write.table(a,"a.csv",col.names = FALSE,row.names = F)
   b=read.csv("a.csv",header=F)
   b=toupper(b$V1) #toupper可将列表转换为chr
   b=b[b%in%data_v1] #二者必须均是chr，才可以成功
   ng<-data_high[match(b,data_v1),1]
-  #Le_Mean<-colMeans(data_high[ng,])
+  
+  dataM<-cbind(ng,dataM)
   assign(paste("G",i,sep=""),colMeans(data_high[ng,]))
 }
+dataM<-dataM[,-23]
+colnames(dataM)<-colnames(dat)
+
+M=cor(dataM)
+pheatmap::pheatmap(M)
+dev.off()
