@@ -30,3 +30,6 @@ for(i in 1:22) {
   assign(dat_name[i],b)
 }
 
+#6.调用（excel的vlookup）
+c<-ID2$ENSEMBL[b%in%ID2$SYMBOL]
+c<-na.omit(c)
