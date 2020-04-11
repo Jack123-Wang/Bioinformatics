@@ -82,8 +82,13 @@ library("edgeR")
 data<-read.table("scRNA.txt")
 
 #1.2去除低表达的基因
-data_high<-data[apply(data, 1, function(x) {sum(x>1) > floor(ncol(data)/1000)}),] 
-#100是可以调整的，如果数字过低，会导致筛到相对高表达的基因过低。
+data_high<-data[apply(data, 1, function(x) {sum(x>1) > floor(ncol(data)/50)}),] 
+#50是可以调整的，如果数字过低，会导致筛到相对高表达的基因过低。
+
+！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！
+！！！！！！！！！    data此时必需是表达矩阵，第一列不能是基因名     ！！！！！！！！！！！！
+！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！
+
 dim (data)
 dim (data_high) #查看还剩下多少基因
 #提取筛选后数据中的第一列基因集
