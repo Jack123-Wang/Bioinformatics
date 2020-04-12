@@ -42,3 +42,7 @@ b=left_join(a,score,by="ID") #合并a和score数据
 #semi_join：根据前一个数据集中的观测在后一个数据集是否有匹配观测来对前一个数据集的观测进行筛选，只保留有匹配的观测
 #anti_join：根据前一个数据集中的观测在后一个数据集是否有匹配观测来对前一个数据集的观测进行筛选，只保留没有匹配的观测
 #by=指定匹配变量，如果匹配变量在两个数据集中名字不同，可以用by = c("a" = "b")指定匹配x的a变量和y的b变量；另外可以用by = c("col1","col2",...)来指定多个匹配变量
+
+#7.排序
+library(dplyr)
+arrange(x,shuxue,desc(yuwen))#按照shuxuec正序排序，然后按照yuwen倒序排序。
