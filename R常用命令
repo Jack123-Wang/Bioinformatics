@@ -13,6 +13,7 @@ dat=read.csv("mESC多能性数据.csv",fill=T,header=TRUE,na.strings="",stringsA
 
 #fill=T,从一个电子表格中导出的文件通常会把拖尾的空字段忽略掉。为了读取这样的文件，必须设置参数 fill = TRUE
 #默认情况下，文件是假定用 NA 表示缺损值，但是，这可以通过参数 na.strings 改变。na.string=""，指无内容的空格也被认定为NA。进而通过后续na.omit去除掉
+#stringsAsFactors=F,默认是T，如果不是F，后续提取出单列时则不能通过na.omit去除空白行。
 
 dat1<-dat$human同源基因
 dat1<-na.omit(dat1)
