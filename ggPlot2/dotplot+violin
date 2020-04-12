@@ -1,0 +1,24 @@
+library(reshape2)
+dat<-read.csv("1.csv",fill=T,header = T,na.strings="",stringsAsFactors=F)
+names(dat)[1]<-"Gene"
+exp<-read.table("GSE44067_ESC expression.txt",header = T)
+data<-merge(dat,exp,by="Gene")
+names(data)<-c("Gene","Type","Expr")
+data$Expr_log10<-log10(1+data$Expr)
+library(ggplot2)
+#调整箱式图box的宽度、改标题以及XY轴名称、按照箱式图的数据形式，更改累积分布函数，可以有三列：
+#一列X，一列Y，一列名称
+p <- ggplot(data,aes(Type,Expr_log10))
+p +  geom_dotplot(data = data,aes(x = Type, y= Expr_log10,colour=Type,fill=Type), position = "jitter", 
+                  binwidth = 0.008, binaxis = "y", method = "dotdensity",alpha=0.5,
+                  binpositions = "bygroup", stackdir = "center", stackratio = 0.001,
+                  dotsize = 0.5, width = 0.9)+
+    geom_violin(aes(color=Type,fill=Type),alpha=0.5,width=1)+
+   labs(title ='筛库数据与ESC表达谱',x='',y='ESC expression(log10(FRKM+1))')
+?geom_violin 
+#dotplot详解：https://www.cnblogs.com/ljhdo/p/4886067.html
+#binwidth控制每个散点图的宽度，stackratio需要比较小，才能使聚集很明显的地方也收回到制定宽度。
+#position="jitter",才能不是一条线的分布
+#binaxis="y",不能等于X（沿着哪个轴进行分箱，默认值是x）
+#stackdir="center",设置堆叠的方向，默认值是up，有效值是down、center、centerwhole和up。
+#colour负责点的外圈颜色，fill负责点的实心部分
