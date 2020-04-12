@@ -14,6 +14,10 @@ test1<- read.table("box.txt",header = TRUE)
 library(ggplot2)
 #调整箱式图box的宽度、改标题以及XY轴名称、按照箱式图的数据形式，更改累积分布函数，可以有三列：
 #一列X，一列Y，一列名称
+
+#如果想切换箱式图的顺序，设定相应列为factor，levels里的内容要和列内容一致，不然会被认定为NA
+G$type<-factor(G$type,levels=c("Ribosome","ESC","Lethal","Low.expression","Non.essential"),ordered=T)
+
 p <- ggplot(test1,aes(Type,read_count))
 p +  geom_boxplot(aes(color=Type),width=0.5)+
   labs(title ='mESC筛库sgRNA_Box plot',x='',y='sgRNA representation(log2 normalized sgRNA counts)')
