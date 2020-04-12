@@ -1,53 +1,22 @@
-install.packages("grDevices") 
-
-#转到.txt所处的文件夹汇总（注意，用\\双斜杠）
 setwd("C:\\Users\\Administrator\\Desktop\\生信分析记录\\ggplot2（3.11-3.15)\\mESC筛库_output\\mESC火山图")
 #将.txt数据导入变量test1、test2中(test1是全体数据，test2是需要强调的点)
 test1 <- read.table("test1.txt",header=TRUE)
-test2 <- read.table("test2.txt",header=TRUE)
-test3 <- read.table("test3.txt",header=TRUE)
-#浏览变量test1、test2、test3是否成功导入
-test1
-test2
-test3
-https://r.789695.n4.nabble.com/Re-densCols-what-are-the-computed-densities-and-how-to-create-a-legend-td2020672.html
-#设置密度颜色参数
-test1_dataX<-test1$X
-test1_dataY<-test1$Y
-test1_data<-cbind(test1_dataX,test1_dataY)
-dc <-densCols(test1_data) 
-smoothScatterCalcDensity
-grDevices
-dd <-grDevices:::.smoothScatterCalcDensity(test1_data,nbin = 128)
-dens <-as.numeric(dd $ fhat)
-dens < -dens [dens> 0] 
-range(dens)
-colLegend <- data.frame(density=seq(min(dens), max(dens), len=10), color=I(colorRampPalette(blues9[-(1:3)])(10))) 
-col=colLegend$color
-col
+#准备表达矩阵
+test1<-test1[,-1]
+#计算密度值
+x <- densCols(test1$X,test1$Y, colramp=colorRampPalette(c("black", "white")))
+test1$dens <- col2rgb(x)[1,] + 1L
 
-dcols<-densCols(test1_data,col = colorRampPalette(c("grey","blue","green","yellow","red")))
-dcols
-densCols
-
-#启动ggplot2程序包
+#画图
 library(ggplot2)
 p <- ggplot()
-#散点图+X/Y轴的名称修改；
-p + geom_point(data = test1, mapping = aes(x = X, y = Y),size=1) + 
-  labs(title="mESC筛库火山图", x="log2 fold change", y="-log10 FDR") +
-#对test2的数据进行标红、放大;对test3的数据标灰；
-  geom_point(data = test2, mapping = aes(x = X, y = Y),colour ="red",size=2) +
-  geom_point(data = test3, mapping = aes(x = X, y = Y),colour ="grey",size=1) +
-#标注文字
-  annotate("text", x=2.5, y=3.2, label="Nanog") +
-  annotate("text", x=-6, y=2.6, label="Sox2") +
-#画横线
-  geom_hline(aes(yintercept=1.5), colour="#990000", linetype="dashed")
-
-p <- ggplot()
-#散点图+X/Y轴的名称修改；
-p + geom_point(data = test1, mapping = aes(x = X, y = Y),size=1.5,colors=col) + 
+p + geom_point(data = test1, mapping = aes(x = X, y = Y,color=dens),size=1) + 
+  scale_colour_gradientn(colours = c("red","yellow","green","blue","grey"),
+                        values=c(1.0,0.2,0.02,0.01,0)) +
   labs(title="mESC筛库火山图", x="log2 fold change", y="-log10 FDR")+
   xlim(-6,3)
-  
+#scale_colour_gradientn可根据dens的数值进行颜色上的调整，比直接用densCols好
+
+###################################################################################################################################
+#################             学习模板：http://wap.sciencenet.cn/blog-526092-1205095.html?mobile=1                 #################
+###################################################################################################################################
