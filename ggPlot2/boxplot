@@ -1,12 +1,30 @@
 #######################################################################################################################################
 #######箱式图的制作关键在于txt文件的准备，一共两列，一列y轴的数值（如log2 count）,一列type，注意要有header(header内部不可有空格)#############################
 #######################################################################################################################################
-Excel的处理:
+##方法一、Excel的处理:
 （1）准备好相应箱式图中的多个基因集（第一列）
 （2）用vlookup调用数据库得到每个基因集的y轴数值，且去掉NA（第二列）
 （3）在每个基因集标上相应type（第三列）
 （4）将多个基因集的第二列和第三列纵向合并到一个数据框中，并另存为.txt文件
-#或者使用reshape2 R包里的melt函数！
+##方法二、使用reshape2 R包里的melt函数！
+##方法三、借助循环语句
+#思路：基因集和表达矩阵分开，故利用循环语句提取基因集中每一个list，然后借助left_join调用表达谱数据，再利用cbind整合多组数据
+setwd("C:\\Users\\Administrator\\Desktop\\生信分析记录\\课题：mESC筛库（YM）\\output\\Figure3：Common gene\\判断花心、花瓣\\boxplot")
+expre<-read.table("GSE44067_ESC expression.txt",header=T)
+list<-read.csv("boxplot.csv",fill=T,header=TRUE,na.strings="",stringsAsFactors=F)
+names(list)[3]<-"Stamen"
+library(reshape2)
+library(dplyr)
+for(i in 1:5){
+  a<-list[i]
+  a=na.omit(a)
+  names(a)="Gene"
+  b=left_join(a,expre,by="Gene")
+  b=na.omit(b)
+  b$type<-names(list)[i]
+  assign(paste("G",i,sep=""),b)
+}
+G<-rbind(G1,G2,G3,G4)
 
 
 setwd("C:\\Users\\Administrator\\Desktop\\生信分析记录\\ggplot2（3.11-3.15)\\mESC筛库_output\\累计分布函数、箱式图")
