@@ -1,0 +1,23 @@
+setwd("C:\\Users\\Administrator\\Desktop\\生信分析记录\\课题：mESC筛库（YM）\\output\\Figure2：our screen\\kegg")
+options(stringsAsFactors = F)
+library(clusterProfiler)
+library(dplyr)
+data<-read.csv("our screen.csv",header = F)
+eg <- bitr(data$V1, fromType="SYMBOL", toType=c("ENTREZID","ENSEMBL"), OrgDb="org.Mm.eg.db")
+head(eg)
+genelist<-eg$ENTREZID
+genelist[duplicated(genelist)]
+genelist<-unique(genelist)
+integer(0)
+?enrichKEGG
+kegg<-enrichKEGG(genelist, organism = "mmu", keyType = "kegg", pvalueCutoff = 0.1,
+           pAdjustMethod = "fdr", minGSSize = 10, maxGSSize = 500,
+           qvalueCutoff = 0.2, use_internal_data = FALSE)
+head(kegg)
+?enrichGO
+go<-enrichGO(genelist, OrgDb=org.Mm.eg.db, keyType = "ENTREZID", ont = "ALL", pvalueCutoff = 0.05, 
+         pAdjustMethod = "BH", universe, qvalueCutoff = 0.2, minGSSize = 10, 
+         maxGSSize = 500, readable = FALSE, pool = FALSE)
+head(go)
+barplot(kegg,showCategory=40,drop=T)
+barplot(go,showCategory=40,drop=T)
