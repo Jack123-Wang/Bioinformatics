@@ -1,0 +1,13 @@
+setwd("C:\\Users\\Administrator\\Desktop\\生信分析记录\\课题：mESC筛库（YM）\\output\\Figure2：our screen\\kegg")
+data<-read.csv("pathway.csv",header =T)
+names(data)<-c("source","name","value")
+x=data$value
+y=factor(data$name,levels = data$name)
+?factor
+library(ggplot2)
+p <- ggplot(data,aes(x,y)) #以富集因子和pathway名称为X轴和Y轴
+p+ geom_point(aes(color=value))+ #点图大小和颜色数据
+scale_colour_gradient(low="green",high="red") #颜色变化
+#+labs(color=expression(-log10),size="Gene number",x="Rich factor",y="Pathway name",title="Top20 of pathway enrichment") #标签名称
+
+#参考模板：https://www.jianshu.com/p/59428e69da05
