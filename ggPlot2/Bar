@@ -1,0 +1,12 @@
+setwd("C:\\Users\\Administrator\\Desktop\\生信分析记录\\课题：mESC筛库（YM）\\output\\Figure2：our screen\\chr")
+data<-read.csv("chr number.csv",header =T)
+data$chrosome<-factor(data$chrosome,levels=c("Chr1","Chr2","Chr3","Chr4","Chr5","Chr6","Chr7","Chr8","Chr9","Chr10","Chr11","Chr12","Chr13","Chr14","Chr15","Chr16","Chr17","Chr18","Chr19","Chr20","Chr21","Chr22","ChrX","ChrY"),ordered=T)
+
+library(ggplot2)
+p<-ggplot()
+p+geom_bar(data,mapping = aes(x=chrosome,y=number), stat = "identity", width=0.9, position="dodge")+
+  labs(x='',y='Gene number')+
+  theme_bw()+theme(panel.grid.major=element_blank(),panel.grid.minor=element_blank())
+
+
+###参考模板https://www.cnblogs.com/ljhdo/archive/2018/09/20/5555858.html
