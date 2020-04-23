@@ -2,4 +2,5 @@
 theme_bw()+theme(panel.grid.major=element_blank(),panel.grid.minor=element_blank())
 
 #boxplot/violin图，X轴按一定顺序排列
-c$v2<-factor(c$v2,levels=c("Chr1","Chr2","Chr3","Chr4","Chr5","Chr6","Chr7","Chr8","Chr9","Chr10","Chr11","Chr12","Chr13","Chr14","Chr15","Chr16","Chr17","Chr18","Chr19","Chr20","Chr21","Chr22","ChrX","ChrY"),ordered=T)
+x<-factor(c$v2,levels=c("Chr1","Chr2","Chr3"),ordered=T) #不建议赋予c$v2，建议赋予一个新变量
+
