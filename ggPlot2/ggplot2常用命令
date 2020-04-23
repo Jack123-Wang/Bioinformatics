@@ -4,3 +4,17 @@ theme_bw()+theme(panel.grid.major=element_blank(),panel.grid.minor=element_blank
 #boxplot/violin图，X轴按一定顺序排列
 x<-factor(c$v2,levels=c("Chr1","Chr2","Chr3"),ordered=T) #不建议赋予c$v2，建议赋予一个新变量
 
+#标注文字，互斥
+install.packages("ggrepel", repo="http://cran.us.r-project.org")
+
+library(ggplot2)
+library(ggrepel)
+p <- ggplot() #以富集因子和pathway名称为X轴和Y轴
+p+ geom_point(data,mapping = aes(x = z, y = y),size=0.005,color="grey")+ #点图大小和颜色数据
+  geom_point(data2,mapping = aes(x=z2,y=y2,color=factor(type)),size=1.5,)+
+  geom_text_repel(data2,mapping = aes(z2,y2,color=factor(type),label =name),max.iter = 5000)+ #label尽量精简
+  labs( x="Rank", y="-log10 FDR")+
+  theme_bw()+theme(panel.grid.major=element_blank(),panel.grid.minor=element_blank())
+
+?geom_label_repel
+#ggrepel实例：https://www.jianshu.com/p/84e7e0e029cd
