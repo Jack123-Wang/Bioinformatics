@@ -101,8 +101,8 @@ plot(out.hclust)
 #PCA
 pc <- prcomp(t(exprSet),scale=TRUE)
 pcx=data.frame(pc$x)
-pcr=cbind(samples=rownames(pcx),group_list, pcx) 
-p=ggplot(pcr, aes(PC1, PC2))+geom_point(size=5, aes(color=group_list)) +
+pcr=cbind(samples=rownames(pcx),sampleType, pcx) 
+p=ggplot(pcr, aes(PC1, PC2))+geom_point(size=5, aes(color=sampleType)) +
   geom_text(aes(label=samples),hjust=-0.1, vjust=-0.3)
 print(p)
 
