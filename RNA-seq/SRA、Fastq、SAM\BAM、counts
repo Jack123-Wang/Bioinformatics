@@ -9,6 +9,17 @@ cd app
 wget -c https://mirrors.tuna.tsinghua.edu.cn/anaconda/miniconda/Miniconda3-4.5.4-Linux-x86_64.sh
 bash Miniconda3-4.5.4-Linux-x86_64.sh
 
+
+#安装过程：
+#1.yes
+#2.安装指定位置：/home/wangjiaqi/data_HD_1 / miniconda3 #最后的文件名必须是miniconda3
+#3.no
+
+#添加至环境变量：
+vim .bashrc
+export PATH="/home/wangjiaqi/data_HD_1/miniconda3/bin:$PATH"#添加至最后一行
+source  .bashrc
+
 #添加镜像
 conda config --add channels https://mirrors.tuna.tsinghua.edu.cn/anaconda/pkgs/free
 conda config --add channels https://mirrors.tuna.tsinghua.edu.cn/anaconda/cloud/conda-forge
