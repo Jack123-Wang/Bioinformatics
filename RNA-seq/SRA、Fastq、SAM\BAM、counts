@@ -20,6 +20,14 @@ vim .bashrc
 export PATH="/home/wangjiaqi/data_HD_1/miniconda3/bin:$PATH"#添加至最后一行
 source  .bashrc
 
+
+#添加多个环境变量时：
+export miniconda3=/home/wangjiaqi/data_HD_1/miniconda3/bin
+export sratoolkit=/home/wangjiaqi/data_HD_1/sratoolkit.2.9.2-ubuntu64/bin
+export PATH=$miniconda3:$sratoolkit:$PATH
+
+
+
 #添加镜像
 conda config --add channels https://mirrors.tuna.tsinghua.edu.cn/anaconda/pkgs/free
 conda config --add channels https://mirrors.tuna.tsinghua.edu.cn/anaconda/cloud/conda-forge
