@@ -18,3 +18,9 @@ p+ geom_point(data,mapping = aes(x = z, y = y),size=0.005,color="grey")+ #点图
 
 ?geom_label_repel
 #ggrepel实例：https://www.jianshu.com/p/84e7e0e029cd
+
+#颜色分组设定：
+那么又有人问，我想要不同分组用不同的颜色，但是又不想用ggplot2默认的颜色：
+scale_colour_brewer()一般用于散点图和折线图等；
+scale_fill_brewer()一般用于箱线图和条形图等需要填充的图。
+geom_bar(aes(fill=group),stat="identity")+scale_fill_manual(values=c("#6495ED","#FFA500","#FF4500"))
