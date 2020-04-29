@@ -29,3 +29,6 @@ scale_colour_brewer(palette="Set1")
 
 #ggplot2 legend图例的修改
 https://www.cnblogs.com/emanlee/p/5373649.html
+
+#坐标轴的修改
+https://blog.csdn.net/qq_42458954/article/details/81154270
