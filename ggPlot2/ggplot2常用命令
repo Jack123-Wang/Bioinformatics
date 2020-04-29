@@ -1,5 +1,6 @@
 #去背景色，去网格线
-theme_bw()+theme(panel.grid.major=element_blank(),panel.grid.minor=element_blank())
++theme_bw()#去背景
++theme(panel.grid.major=element_blank(),panel.grid.minor=element_blank())#去网格线
 
 #boxplot/violin图，X轴按一定顺序排列
 x<-factor(c$v2,levels=c("Chr1","Chr2","Chr3"),ordered=T) #不建议赋予c$v2，建议赋予一个新变量
@@ -39,3 +40,6 @@ geom_vline
 
 #非全长辅助线的添加：
 geom_segment 参考https://blog.csdn.net/helloclety/article/details/54236370
+
+#坐标原点对齐到（0,0）
+scale_x_continuous(expand = c(0, 0))+scale_y_continuous(expand = c(0, 0))
