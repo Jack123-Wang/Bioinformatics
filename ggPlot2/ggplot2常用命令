@@ -32,3 +32,10 @@ https://www.cnblogs.com/emanlee/p/5373649.html
 
 #坐标轴的修改
 https://blog.csdn.net/qq_42458954/article/details/81154270
+
+#辅助线的添加：
+geom_hline
+geom_vline
+
+#非全长辅助线的添加：
+geom_segment 参考https://blog.csdn.net/helloclety/article/details/54236370
