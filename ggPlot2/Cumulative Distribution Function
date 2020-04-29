@@ -13,10 +13,10 @@ TC1<-sort(TC1)
 TC2<-sort(TC2)
 #用pnorm函数取向量中每一个点所对应的累计分布函数
 #注意pnrom函数中mean选项必需取平均值，不是默认的0，否则函数认为我们的数据是以x=0对称的
-z1=pnorm(CC1,mean(CC1))
-z2=pnorm(CC2,mean(CC2))
-z3=pnorm(TC1,mean(TC1))
-z4=pnorm(TC2,mean(TC2))
+z1=pnorm(CC1,mean(CC1),sd(CC1))
+z2=pnorm(CC2,mean(CC2),sd(CC2))
+z3=pnorm(TC1,mean(TC1),sd(TC1))
+z4=pnorm(TC2,mean(TC2),sd(TC2))
 
 #将CC/TC向量和Z向量组成一个两列的数组，以便后续画图（CC/TC为X，z为Y）
 data1=data.frame(CC1,z1)
