@@ -34,6 +34,9 @@ conda config --add channels https://mirrors.tuna.tsinghua.edu.cn/anaconda/cloud/
 conda config --add channels https://mirrors.tuna.tsinghua.edu.cn/anaconda/cloud/bioconda
 conda config --set show_channel_urls yes
 
+#恢复默认镜像设置：
+conda config --remove-key channels
+
 #为了避免污染linux工作环境，推荐在conda中创建各个流程的安装环境，比如：
 conda create -n rna python=2 #创建名为rna的软件安装环境
 conda info --envs #查看当前conda环境
