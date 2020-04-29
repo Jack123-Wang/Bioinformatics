@@ -1,6 +1,8 @@
-#去背景色，去网格线
+#去背景色，去网格线，去除顶和右边框
 +theme_bw()#去背景
-+theme(panel.grid.major=element_blank(),panel.grid.minor=element_blank())#去网格线
++theme(panel.grid.major=element_blank(),panel.grid.minor=element_blank())#去网格线（panel.grid.major主网格线；panel.grid.minor次网格线	）
++theme_classic() #去除顶和右边框
++panel.border = element_blank())#去除所有边框
 
 #boxplot/violin图，X轴按一定顺序排列
 x<-factor(c$v2,levels=c("Chr1","Chr2","Chr3"),ordered=T) #不建议赋予c$v2，建议赋予一个新变量
