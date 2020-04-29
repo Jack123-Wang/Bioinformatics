@@ -37,6 +37,12 @@ conda config --set show_channel_urls yes
 #恢复默认镜像设置：
 conda config --remove-key channels
 
+#显示安装的频道
+conda config --set show_channel_urls yes 
+
+#查看已经添加的channels
+conda config --get channels
+
 #为了避免污染linux工作环境，推荐在conda中创建各个流程的安装环境，比如：
 conda create -n rna python=2 #创建名为rna的软件安装环境
 conda info --envs #查看当前conda环境
