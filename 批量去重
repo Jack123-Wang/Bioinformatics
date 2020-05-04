@@ -1,0 +1,32 @@
+setwd("/home/yumeng/data_HD_1/R")
+#step1:导入需要去重的csv
+go<-read.csv("GO.csv",header=F,stringsAsFactors = F)
+#如果数据是横线排列的，先调整成纵向排序
+go<-t(go)
+signal<-read.csv("signal.csv",header = F,stringsAsFactors = F)
+
+#step2:准备循环语句去重
+#g、s分别是append的载体
+g<-""
+s<-""
+options(stringsAsFactors = F)
+for (i in 1:1630){
+  i=1
+  a<-go[,i]
+  a<-unique(a)
+  g<-append(g,a)
+}
+
+ g<-unique(g)
+for (i in 1:35){
+  a<-signal[,i]
+  a<-unique(a)
+  s<-append(s,a)
+}
+
+s<-unique(s)
+g<-unique(g)
+
+#step3：导出csv表格
+write.csv(g,"go1.csv")
+write.csv(s,"signal1.csv")
