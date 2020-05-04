@@ -158,9 +158,9 @@ data<-data[,-91] #去除SYMBOL
 #提取筛选后数据中的第一列基因集
 data_v1<-rownames(data) #select是dplyr R包的函数
 
-#1.3利用edgeR消除文库大小差异
-data<-edgeR::cpm(data)
-
+####################################
+#####不要用edgeR来消除文库差异!######
+####################################
 
 #2.准备基因集
 setwd("C:\\Users\\Administrator\\Desktop")
