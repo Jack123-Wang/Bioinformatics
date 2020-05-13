@@ -3,6 +3,7 @@ BiocManager::install('org.Mm.eg.db')
 suppressMessages(library(org.Mm.eg.db)) 
 #org.Mm.eg.db（鼠）或者org.Hs.eg.db（人）
 
+###############################################         方法一：org.Mm.eg.db       ###################################################
 
 ID<-select(org.Mm.eg.db, keys=b, columns=c("ENSEMBL","UNIGENE","ENTREZID","CHR","GO","GENENAME"), keytype="SYMBOL")
 #keys负责添加需要转换的基因列表，格式：文本符号（chr）
@@ -24,3 +25,13 @@ keytypes(org.Hs.eg.db)
 ##  [17] "GENENAME"     "UNIPROT"      "GO"           "EVIDENCE"
 ##  [21] "ONTOLOGY"     "GOALL"        "EVIDENCEALL"  "ONTOLOGYALL"
 ##  [25] "OMIM"         "UCSCKG"
+
+
+##################################################        方法二：clusterprofiler        ################################################
+
+  gene<- bitr(a$id, fromType="SYMBOL", toType="ENTREZID", OrgDb="org.Mm.eg.db")
+
+##################################################        方法三：gprofiler             ################################################
+
+#g:Convert→Target namespace(选ENSG，在clusterprofiler对应ENSEMBL）
+#gprofiler的ID转换是转换率最高的，因为它判断fromtype时，是从多个数据库中识别的，但clusterprofiler判断fromtype只能从单一数据库中对应
