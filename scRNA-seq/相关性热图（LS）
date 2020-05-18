@@ -1,0 +1,48 @@
+setwd("C:/Users/Administrator/Desktop")
+#准备基因集
+dat<-read.csv("wjj.csv",fill=T,header=TRUE,na.strings="",stringsAsFactors=F)
+dat_name<-names(dat)
+#准备表达矩阵
+data<-read.table("GSM1599495_ES_d0_biorep_techrep1.csv",sep=",",header=F)
+data$V1<-toupper(data$V1)
+rownames(data)<-data$V1
+data<-data[,-1]
+
+library("dplyr")
+library("edgeR")
+
+#提取筛选后数据中的第一列基因集
+data_v1<-rownames(data) #select是dplyr R包的函数
+#data_high<-data[apply(data, 1, function(x) {sum(x>1) > floor(ncol(data)/50)}),] 
+
+#1.3利用edgeR消除文库大小差异
+#data<-edgeR::cpm(data)
+
+i=1
+a=dat[dat_name[i]]
+write.table(a,"a.csv",col.names = FALSE,row.names = F)
+b=read.csv("a.csv",header=F)
+b<-as.character(b$V1)
+b<-na.omit(b)
+b<-toupper(as.character(b))
+c=b[b%in%data_v1] #二者必须均是chr，才可以成功.
+G1<-colMeans(data[c,])#c是一群基因名称，将这群基因名称的平均表达量取均值赋予G1，G1表示某个基因集在每一个细胞中的平均表达量
+dataM<-G1
+
+#rm(dataM)
+
+for(i in 2:11) {
+  a=dat[dat_name[i]]
+  write.table(a,"a.csv",col.names = FALSE,row.names = F)
+  b=read.csv("a.csv",header=F)
+  b<-as.character(b$V1)
+  b<-na.omit(b)
+  b<-toupper(as.character(b))
+  c=b[b%in%data_v1] #二者必须均是chr，才可以成功
+  d<-colMeans(data[c,])
+  dataM<-cbind(dataM,d)
+}
+
+colnames(dataM)<-dat_name
+M=cor(dataM)
+pheatmap::pheatmap(M)
