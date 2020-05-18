@@ -1,0 +1,64 @@
+setwd("C:/Users/Administrator/Desktop")
+dat<-read.csv("wjj.csv",fill=T,header=TRUE,na.strings="",stringsAsFactors=F)
+dat_name<-names(dat)
+
+data<-read.table("GSE116165_rna_counts.txt",sep=",",header=T)
+#E4.5
+data<-data[,1:91] #E4.5
+#E5.5
+data_name<-data[1]
+data<-data[,93:172] #E5.5
+data<-cbind(data_name,data)
+#E6.5
+data_name<-data[1]
+data<-data[,173:265] #E6.5
+data<-cbind(data_name,data)
+#1.2转ID:将ENSEMBL转换为SYMBOL
+library("clusterProfiler")
+library("dplyr")
+library("edgeR")
+
+
+eg= bitr(data$ens_id, fromType="ENSEMBL", toType="SYMBOL", OrgDb="org.Mm.eg.db") #获取两种ID的对应列表
+data=left_join(data,eg,by=c("ens_id"="ENSEMBL") )#合并数据，类似于excel的vlookup
+data<-na.omit(data)#去除NA值
+data<-data %>% distinct(SYMBOL, .keep_all = TRUE) #去除SYMBOL中重复名字
+data$SYMBOL<-toupper(data$SYMBOL)
+rownames(data)<-data$SYMBOL
+data<-data[,-1] #去除ens_id
+data<-data[,-length(data)] #去除SYMBOL
+#提取筛选后数据中的第一列基因集
+data_v1<-rownames(data) #select是dplyr R包的函数
+#data_high<-data[apply(data, 1, function(x) {sum(x>1) > floor(ncol(data)/50)}),] 
+
+#1.3利用edgeR消除文库大小差异
+#data<-edgeR::cpm(data)
+
+i=1
+a=dat[dat_name[i]]
+write.table(a,"a.csv",col.names = FALSE,row.names = F)
+b=read.csv("a.csv",header=F)
+b<-as.character(b$V1)
+b<-na.omit(b)
+b<-toupper(as.character(b))
+c=b[b%in%data_v1] #二者必须均是chr，才可以成功.
+G1<-colMeans(data[c,])#c是一群基因名称，将这群基因名称的平均表达量取均值赋予G1，G1表示某个基因集在每一个细胞中的平均表达量
+dataM<-G1
+
+#rm(dataM)
+
+for(i in 2:11) {
+  a=dat[dat_name[i]]
+  write.table(a,"a.csv",col.names = FALSE,row.names = F)
+  b=read.csv("a.csv",header=F)
+  b<-as.character(b$V1)
+  b<-na.omit(b)
+  b<-toupper(as.character(b))
+  c=b[b%in%data_v1] #二者必须均是chr，才可以成功
+  d<-colMeans(data[c,])
+  dataM<-cbind(dataM,d)
+}
+
+colnames(dataM)<-dat_name
+M=cor(dataM)
+pheatmap::pheatmap(M)
