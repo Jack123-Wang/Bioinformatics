@@ -1,0 +1,56 @@
+#学习参考网站：https://zhuanlan.zhihu.com/p/32607443
+
+#Step1:下载TCGA数据
+#1.1确定肿瘤类型（project)，以选择下载内容
+library(TCGAbiolinks)
+setwd("/home/wangjiaqi/data_HD_1/R/TCGA") #定位工作目录
+query <- GDCquery(project = "TCGA-LUAD",
+                  data.category = "Transcriptome Profiling",
+                  data.type = "Gene Expression Quantification",
+                  workflow.type = "HTSeq - FPKM-UQ")
+GDCdownload(query)#将TCGA数据下载到工作目录中
+
+#1.2将数据整理后导入R中，获取dataLUAD
+dataLUAD <- GDCprepare(query, save = TRUE,
+                       save.filename = "dataLUAD_summerizedExperiment.rda",
+                       remove.files.prepared = TRUE)
+#1.3对dataLUAD提取样本信息
+library(SummarizedExperiment)
+samples.information=colData(dataLUAD)
+#1.4对dataLUAD标准化、过滤低质量信息
+dataNorm <- TCGAanalyze_Normalization(tabDF = dataLUAD, geneInfo = geneInfoHT)
+dataFilt <- TCGAanalyze_Filtering(tabDF = dataNorm,
+                                  method ="quantile",
+                                  qnt.cut = 0.25)
+
+#Step2：DEG差异分析
+#2.1定义对照组
+samplesNT <- TCGAquery_SampleTypes(barcode = colnames(dataFilt),
+                                   typesample = c("NT"))
+#2.2定义肿瘤组
+samplesTP <- TCGAquery_SampleTypes(barcode = colnames(dataFilt),
+                                   typesample = c("TP"))
+#2.3DEG分析
+dataDEGs <- TCGAanalyze_DEA(mat1 =dataFilt[,samplesNT],
+                            mat2 = dataFilt[,samplesTP],
+                            Cond1type = "Normal",
+                            Cond2type = "Tumor",
+                            fdr.cut = 0.01 ,
+                            logFC.cut = 1,
+                            method = "glmLRT")
+
+#2.4将DEGjieguo结果、TP、NT相关信息整合，以便导出
+dataDEGsFiltLevel <- TCGAanalyze_LevelTab(dataDEGs,"Tumor","Normal",
+                                          dataFilt[,samplesTP],dataFilt[,samplesNT])
+#2.5基因ID转换(从ENSEMBL转到SYMBOL)
+library(clusterProfiler)
+library(dplyr)
+names(dataDEGsFiltLevel)[1]<-"id"
+gene<- bitr(dataDEGsFiltLevel$id, fromType="ENSEMBL", toType="SYMBOL", OrgDb="org.Hs.eg.db")
+names(gene)[1]<-"id"
+dataDEGsFiltLevel<-inner_join(dataDEGsFiltLevel,gene,by="id") %>%
+  dplyr::select(SYMBOL,everything())
+names(dataDEGsFiltLevel)[2]<-"ENSEMBL"
+
+#2.6导出
+write.csv(dataDEGsFiltLevel,file="DEA_LUAD.csv")
