@@ -1,0 +1,5 @@
+#step1：去官网找到下载文件
+#step2：登录Xshell6，用wget命令下载
+#step3：对于下载好的tar.gz文件，在Bash上（不在R里面）使用命令（前面是我们的library的地址，后面是R包的位置）：
+R CMD INSTALL -l /disk_HD_1/R_Lib  /home/wangjiaqi/data_HD_1/TCGAbiolinks_2.16.0.tar.gz
+#step4：安装过程中可能会遇到很多依赖包没有下载导致不能顺利安装成功，所以建议在R上利用biocmanange:：install先把能依赖包能安装的下安装了，先执行step3
