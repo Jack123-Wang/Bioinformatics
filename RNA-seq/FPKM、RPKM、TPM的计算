@@ -4,6 +4,8 @@ BiocManager::install("rtracklayer")
 BiocManager::install("IRanges")
 
 #1.计算小鼠基因长度
+
+####方法一####
 library(data.table)
 library("IRanges")
 require("rtracklayer")
@@ -18,8 +20,15 @@ Exon_region[,Exon_num:=1:.N,by=Gene]
 Exon_region <- Exon_region[,.(Chr,ExonStart,ExonEnd,Exon_num,Gene)]
 Exon_len <- Exon_region[,.(ExonLen = ExonEnd - ExonStart + 1),by=.(Exon_num,Gene)]
 gene_len <- Exon_len[,.(Length = sum(ExonLen)),by=Gene]
-
 fwrite(gene_len, file = "All_mmu10gene_len.txt", sep = "\t", col.names = T)
+####  End  ####
+
+####方法二####
+wget ftp://ftp.ncbi.nlm.nih.gov/pub/CCDS/current_mouse/CCDS.current.txt
+grep -v '^#' CCDS.current.txt | perl -alne '{/\[(.*?)\]/;$len=0;foreach(split/,/,$1){@tmp=split/-/;$len+=($tmp[1]-$tmp[0])};$h{$F[2]}=$len if $len >$h{$F[2]}} END{print "$_\t$h{$_}" foreach sort keys %h}' >mm10_ccds_length.txt
+####  End  ####
+
+
 #2.计算FPKM,TPM（需要两组数据：read count和基因长度）
 #2.1 在excel里，将两组数据以基因名称为索引整合，运用函数vlookup，个人建议"精确匹配"
 #整合好后，以txt导出，确定好工作目录后，导入
