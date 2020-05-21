@@ -46,3 +46,6 @@ b=left_join(a,score,by="ID") #合并a和score数据
 #7.排序
 library(dplyr)
 arrange(x,shuxue,desc(yuwen))#按照shuxuec正序排序，然后按照yuwen倒序排序。
+
+#8.去重（unique或disti）
+exprSet3<-distinct(exprSet2,ID,.keep_all = T)
