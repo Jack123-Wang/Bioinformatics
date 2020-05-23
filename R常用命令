@@ -49,3 +49,6 @@ arrange(x,shuxue,desc(yuwen))#按照shuxuec正序排序，然后按照yuwen倒�
 
 #8.去重（unique或disti）
 exprSet3<-distinct(exprSet2,ID,.keep_all = T)
+
+#9.去前缀或后缀
+b<-str_replace(a,"ME","") #去除前缀"ME"
