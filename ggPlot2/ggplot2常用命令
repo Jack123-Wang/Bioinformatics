@@ -37,8 +37,8 @@ https://www.cnblogs.com/emanlee/p/5373649.html
 https://blog.csdn.net/qq_42458954/article/details/81154270
 
 #辅助线的添加：
-geom_hline
-geom_vline
+geom_hline(aes(yintercept=0.81),color="red",linetype="dashed")+
+  geom_vline(aes(xintercept=0.58),color="blue",linetype="dashed")
 
 #非全长辅助线的添加：
 geom_segment 参考https://blog.csdn.net/helloclety/article/details/54236370
