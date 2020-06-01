@@ -16,7 +16,7 @@ library(ggrepel)
 p <- ggplot() #以富集因子和pathway名称为X轴和Y轴
 p+ geom_point(data,mapping = aes(x = z, y = y),size=0.005,color="grey")+ #点图大小和颜色数据
   geom_point(data2,mapping = aes(x=z2,y=y2,color=factor(type)),size=1.5,)+
-  geom_text_repel(data2,mapping = aes(z2,y2,color=factor(type),label =name),max.iter = 5000)+#label尽量精简
+  geom_text_repel(data2,mapping = aes(z2,y2,color=factor(type),label =name),fontface="bold",max.iter = 5000)+#label尽量精简
   labs( x="Rank", y="-log10 FDR")+
   theme_bw()+theme(panel.grid.major=element_blank(),panel.grid.minor=element_blank())
 
