@@ -1,0 +1,43 @@
+##准备3个文件:
+#1.target.csv(三列信息，sgRNA，Genename,LFC)
+#2.non-target.csv(三列信息，sgRNA，Genename,LFC)
+#3.demo.gene_summary(target).txt(在demo.gene_summary.txt原有文件基础上，去除non-target sgRNA)
+
+data1<-read.csv("target.csv")
+data2<-read.csv("non_target.csv")
+T02<-data2$LFC
+
+#T1<-c(24,26,29,34,43,58,63,72,87,101)
+#T2<-c(82,87,97,121,164,208,213)
+#gene<-as.character(data1$Gene)
+#gene<-unique(gene)
+
+library(dplyr)
+data<-read.table("demo.gene_summary(target).txt",header = T)
+names(data)
+a<-filter(data,neg.p.value<0.05|pos.p.value<0.05)
+gene1<-as.character(a$id)
+
+for (i in 1:1){
+  i=1
+  a<-gene1[i]
+  b<-data1[as.character(data1$Gene) %in% a,3]
+  c<-wilcox.test(b,T02,alternative = "two.sided",exact=FALSE,correct=FALSE)
+  d<-cbind(a,as.numeric(c[[1]]),as.numeric(c[3]))
+}
+
+for (i in 2:length(gene1)){
+  a<-gene1[i]
+  b<-data1[as.character(data1$Gene) %in% a,3]
+  c<-wilcox.test(b,T02,alternative = "two.sided",exact=FALSE,correct=FALSE)
+  e<-cbind(a,as.numeric(c[[1]]),as.numeric(c[3]))
+  d<-rbind(d,e)
+}
+colnames(d)<-c("Gene","w","p.value")
+d1<-as.data.frame(d)
+d1$p.value<-as.numeric(as.character(d1$p.value))
+library(fdrtool)
+d1$fdr<-p.adjust(d1$p.value,method='fdr',n=length(d1$p.value)) #d1是全体基因（MAGECK算法中正负富集p<0.05的）
+d2<-filter(d1,fdr<0.05) #d2是fdr<0.05
+write.csv(d1,"total.csv")
+
