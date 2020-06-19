@@ -52,3 +52,8 @@ exprSet3<-distinct(exprSet2,ID,.keep_all = T)
 
 #9.去前缀或后缀
 b<-str_replace(a,"ME","") #去除前缀"ME"
+
+#10批量导入数据
+temp = list.files(pattern="*.xls")
+for (i in 1:1){
+  assign("a",read.csv(temp[i],,sep = ""))
