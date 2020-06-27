@@ -1,0 +1,33 @@
+#从excel里复制粘贴到word中，ctrl+F替换'^p'为'.file '，复制这段文字，并之后再相应位置里输出：
+touch [复制文字]
+之后建立一个脚本：
+vim tesh.sh
+
+sh tesh.sh
+nohup sh tesh.sh &
+
+##############################################以下为脚本内容###############################################
+ls *.file|while read ids 
+do
+	gene=$(basename $ids .file)
+	wget -c https://www.ncbi.nlm.nih.gov/gene/?term=$gene -O $gene.html
+	cat $gene.html|grep 'Mus musculus'|sed 's/class="gene-id">/&\n/g'|grep 'Mus musculus'|sed 's/<.*$//g'|sed 's/ID: //g'|sed ':a;N;s/\n//g;ta'|sed 's/ //g'>id1.txt
+	cat $gene.html|grep 'Homo sapiens'|sed 's/class="gene-id">/&\n/g'|grep 'Homo sapiens'|sed 's/<.*$//g'|sed 's/ID: //g'|sed ':a;N;s/\n//g;ta'|sed 's/ //g'>id2.txt
+	cat id1.txt id2.txt > id.txt
+	cat id.txt|while read id
+do
+	wget  -c https://www.ncbi.nlm.nih.gov/gene/$id
+	cat $id|grep -A 4 'Official'|grep 'prov">provided by <a'|sed 's/<dd class="noline">//g'|sed 's/<span class.*$//g'|sed 's/<dd>//g'|sed 's/^.       //g'>k1.txt
+	cat $id|grep -A 1 'Also known as'|sed 's/^.*<dt>.*$//g'|sed 's/^.*<dd>//g'|sed 's/<\/dd>//g'|sed '/^$/d'|sed 's/; /\n/g'>k2.txt
+	cat k1.txt k2.txt>>k3.txt
+	cat k3.txt |while read k;do echo $k'[title/abstract] or ';done|sed ':a;N;s/\n//g;ta'> $gene.file.txt
+done
+rm k3.txt	
+done
+mkdir output
+mv *.file.txt output/
+cd output/
+cat *.file.txt > total.txt 
+ls *.file.txt| while read id; do ids=$(basename $id .file.txt);echo $ids;done>>total.txt
+##################################################    End   #############################################
+
