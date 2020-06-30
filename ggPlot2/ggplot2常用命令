@@ -4,6 +4,12 @@
 +theme_classic() #去除顶和右边框
 +panel.border = element_blank())#去除所有边框
 
+theme(panel.grid =element_blank()) +   ## 删去网格线
+  theme(axis.text = element_blank()) +   ## 删去刻度标签
+  theme(axis.ticks = element_blank()) +   ## 删去刻度线
+  theme(panel.border = element_blank()) +   ## 删去外层边框
+  theme(axis.line = element_line(size=1, colour = "black"))   ## 再加上坐标轴（无刻度、无标签）
+
 #boxplot/violin图，X轴按一定顺序排列
 x<-factor(c$v2,levels=c("Chr1","Chr2","Chr3"),ordered=T) #不建议赋予c$v2，建议赋予一个新变量
 
