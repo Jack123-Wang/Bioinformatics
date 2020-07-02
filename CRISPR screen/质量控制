@@ -1,0 +1,4 @@
+过滤read尾部质量值20以下的碱基，设置15bp的窗口，如果窗口内的平均质量值低于4，从窗口开始截去后端碱基，过滤质控后75bp以下的read（trimmomatic）
+trimmomatic PE -threads 16 -phred33 -trimlog trim.log  lib-1_R1.fq.gz lib-1_R2.fq.gz paired_lib-1_R1.fq.gz unpaired_lib-1_R1.fq.gz paired_lib-1_R2.fq.gz unpaired_lib-1_R2.fq.gz SLIDINGWINDOW:15:4 TRAILING:20 MINLEN:75
+
+根据PE reads之间的overlap关系，将成对reads拼接(merge)成一条序列，最小overlap长度为10bp（FALSH）
