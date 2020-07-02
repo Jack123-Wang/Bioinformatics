@@ -4,6 +4,8 @@
 +theme_classic() #去除顶和右边框
 +panel.border = element_blank())#去除所有边框
 
+
+
 theme(panel.grid =element_blank()) +   ## 删去网格线
   theme(axis.text = element_blank()) +   ## 删去刻度标签
   theme(axis.ticks = element_blank()) +   ## 删去刻度线
@@ -43,7 +45,15 @@ https://www.cnblogs.com/emanlee/p/5373649.html
 https://blog.csdn.net/qq_42458954/article/details/81154270
 
 #坐标轴、刻度加粗
-axis.ticks.y=element_line(color="black",size=1,lineend = 22),
+  theme(#axis.line.x=element_line(linetype=1,color="black",size=1),#坐标轴加粗
+        #axis.line.y=element_line(linetype=1,color="black",size=1),  
+        axis.ticks.x=element_line(color="black",size=1,lineend = 22),  #刻度加粗
+        axis.ticks.y=element_line(color="black",size=1,lineend = 22),
+        axis.title.x = element_text(size = 15, face = "bold"), #坐标轴文字
+        axis.title.y = element_text(size = 15, face = "bold"),
+        axis.text.x = element_text(size = 15, face = "bold" ),#刻度文字
+        axis.text.y = element_text(size = 15, face = "bold" ),
+        panel.border=element_rect(color="black", size=3)) #边框加粗
 
 #辅助线的添加：
 geom_hline(aes(yintercept=0.81),color="red",linetype="dashed")+
