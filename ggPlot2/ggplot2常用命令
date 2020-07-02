@@ -42,6 +42,9 @@ https://www.cnblogs.com/emanlee/p/5373649.html
 #坐标轴的修改
 https://blog.csdn.net/qq_42458954/article/details/81154270
 
+#坐标轴、刻度加粗
+axis.ticks.y=element_line(color="black",size=1,lineend = 22),
+
 #辅助线的添加：
 geom_hline(aes(yintercept=0.81),color="red",linetype="dashed")+
   geom_vline(aes(xintercept=0.58),color="blue",linetype="dashed")
