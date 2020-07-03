@@ -1,0 +1,13 @@
+trimmomatic PE -threads 16 -phred33 -trimlog trim.log  lib-1_R1.fq.gz lib-1_R2.fq.gz paired_lib-1_R1.fq.gz unpaired_lib-1_R1.fq.gz paired_lib-1_R2.fq.gz unpaired_lib-1_R2.fq.gz SLIDINGWINDOW:15:4 TRAILING:20 MINLEN:75
+
+time trimmomatic PE -threads 16 -phred33 -trimlog trim.log  lib-2_R1.fq.gz lib-2_R2.fq.gz paired_lib-2_R1.fq.gz unpaired_lib-2_R1.fq.gz paired_lib-2_R2.fq.gz unpaired_lib-2_R2.fq.gz SLIDINGWINDOW:15:4 TRAILING:20 MINLEN:75
+
+/home/wangjiaqi/data_HD_1/app/FLASH/FLASH-1.2.11/flash --min-overlap 10 --max-mismatch-density 0.25 -t 6 paired_lib-1_R1.fq.gz paired_lib-1_R2.fq.gz --output-prefix=lib-1 --output-directory=./ >flash1.log
+
+/home/wangjiaqi/data_HD_1/app/FLASH/FLASH-1.2.11/flash --min-overlap 10 --max-mismatch-density 0.25 -t 6 paired_lib-2_R1.fq.gz paired_lib-2_R2.fq.gz --output-prefix=lib-2 --output-directory=./ >flash2.log
+
+mageck count -l 'Brunello library(mageck)+non-target.csv' -n demo --sample-label lib1,lib2,CTRL1,CTRL2  --fastq lib-1.extendedFrags.fastq lib-2.extendedFrags.fastq Input-B2B-180924.top20.fasta Input-B2B-181105.top20.fasta
+
+mageck test -k demo.count.txt -t lib1 -c CTRL1 -n demo.lib1
+mageck test -k demo.count.txt -t lib2 -c CTRL2 -n demo.lib2
+
