@@ -35,7 +35,9 @@ p+ geom_point(data,mapping = aes(x = z, y = y),size=0.005,color="grey")+ #点图
 scale_colour_brewer()一般用于散点图和折线图等；
 scale_fill_brewer()一般用于箱线图和条形图等需要填充的图。
 e.g.
+group.colors <- c("red", "purple","black", "grey")
 scale_fill_manual(values=c("#6495ED","#FFA500","#FF4500"))
+scale_colour_manual(values=group.colors) #箱式图、线图
 scale_colour_brewer(palette="Set1")
 
 #ggplot2 legend图例的修改
