@@ -66,3 +66,7 @@ geom_segment 参考https://blog.csdn.net/helloclety/article/details/54236370
 
 #坐标原点对齐到（0,0）
 scale_x_continuous(expand = c(0, 0))+scale_y_continuous(expand = c(0, 0))
+
+#统一缩放或放大点的大小
+scale_radius(name = "高速公路油耗", range = c(2, 10), limits = c(0, 30))# 指定半径从2变化到10，即最小半径为2，最大半径为10,只显示值小于30的数据点
+参考网址：https://blog.csdn.net/weixin_43528109/article/details/83859213
