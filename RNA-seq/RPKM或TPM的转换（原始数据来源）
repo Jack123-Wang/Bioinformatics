@@ -1,0 +1,87 @@
+setwd("/disk_HD_1/wangjiaqi/hESC-rnaseq/2/R")
+data<-read.table("GSE127935 (1).txt",header=T)
+
+gene<-data[,c(1,2)]
+
+#导入表达矩阵（counts)(最终形式为：rownames是基因名，colnames是样本名,从第一列开始就是数值，即表达矩阵)
+rownames(data)<-data$Geneid
+data<-data[,-c(1,2)]
+exprSet<-data
+#得出与exprSet对应的基因length
+neededGeneLength=gene[match(rownames(data), gene$Geneid),2] 
+
+
+#Step2:形成公式
+countToTpm <- function(counts, effLen)
+{ rate <- log(counts) - log(effLen)
+denom <- log(sum(exp(rate)))
+exp(rate - denom + log(1e6))}
+
+countToFpkm <- function(counts, effLen)
+{ N <- sum(counts)
+exp( log(counts) + log(1e9) - log(effLen) - log(N) )}
+
+fpkmToTpm <- function(fpkm)
+{exp(log(fpkm) - log(sum(fpkm)) + log(1e6))}
+
+#Step3:RPKM、TPM、RPKM/TPM的转换
+############   1.计算count到RPKM  ############
+for (i in 1:1){
+  i=1
+  counts<-exprSet[i]
+  effLen<-neededGeneLength
+  N<-sum(counts)
+  b<-exp( log(counts) + log(1e9) - log(effLen) - log(N) )
+}
+#rm(b)
+
+for (i in 2:length(exprSet)){
+  counts<-exprSet[i]
+  effLen<-neededGeneLength
+  N<-sum(counts)
+  c<-exp( log(counts) + log(1e9) - log(effLen) - log(N) )
+  names(c)[1]<-"id"
+  b<-cbind(b,c$id)
+}
+names(b)<-names(exprSet)
+write.csv(b,"GSE127935_RPKM.csv")
+
+
+############    2.计算FPKM到TPM    ##########
+#将RPKM数据导入到b向量中
+for (i in 1:1){
+  i=1
+  fpkm<-b[i]
+  c<-exp(log(fpkm) - log(sum(fpkm)) + log(1e6))
+}
+
+for (i in 2:length(exprSet)){
+  
+  fpkm<-b[i]
+  d<-exp(log(fpkm) - log(sum(fpkm)) + log(1e6))
+  names(d)[1]<-"id"
+  c<-cbind(c,d$id)
+}
+names(c)<-names(exprSet)
+write.csv(c,"GSE122067_TPM1.csv")
+
+############   3.计算count到TPM    ############
+rm(b)
+for (i in 1:1){
+  i=1
+  counts<-exprSet[i]
+  effLen<-neededGeneLength
+  N<-sum(counts)
+  b<-countToTpm(counts, effLen)
+}
+
+for (i in 2:length(exprSet)){
+  counts<-exprSet[i]
+  effLen<-neededGeneLength
+  N<-sum(counts)
+  c<-countToTpm(counts, effLen)
+  names(c)[1]<-"id"
+  b<-cbind(b,c$id)
+}
+names(b)<-names(exprSet)
+write.csv(b,"GSE127935_TPM.csv")
