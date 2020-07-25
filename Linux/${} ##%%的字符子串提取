@@ -1,0 +1,69 @@
+inux shell获取文件名和路径，basename/dirname/${}运用
+#参考网址：https://blog.csdn.net/ksj367043706/article/details/94993422
+
+一、${} ##、%%
+上面两个命令是shell提供的，难免有些限制，我们可以使用${}来灵活获取，而且${}可以用来做shell的字符子串提取。
+
+1. ${var##*/}
+直接看个栗子
+#/bin/bash
+var='/dir1/dir2/dir3/a.b.c.d'
+ 
+echo  ${var##*/}
+上面这个栗子是：左起，找到最后一个'/'字符，返回其后面的内容（不含'/'）
+
+上面栗子的结果为：
+a.b.c.d
+2. ${##*.}
+
+跟上面栗子一样:左起，找到最后一个'.'字符，返回其后面的内容（不含'.'）
+#/bin/bash
+var='/dir1/dir2/dir3/a.b.c.d'
+ 
+echo  ${var##*/}
+结果为：
+
+d
+3. ${var#*.}
+左起，找到第一个'.'字符，返回其后面的内容（不含'.'）
+#/bin/bash
+var='/dir1/dir2/dir3/a.b.c.d'
+ 
+echo  ${var#*.}
+结果为：
+
+b.c.d
+4. ${var%/*}
+
+右起，找到第一个'/'字符，返回开始到该字符的内容（不含'/'）
+
+#/bin/bash
+var='/dir1/dir2/dir3/a.b.c.d'
+ 
+echo ${var%/*}
+结果为：
+
+/dir1/dir2/dir3
+7.${var%%.*}
+
+右起，找到最后一个'.'字符，返回开始到该字符的内容（不含'.'）
+
+#/bin/bash
+var='/dir1/dir2/dir3/a.b.c.d'
+ 
+echo ${var%%.*}
+结果为：
+
+/dir1/dir2/dir3/a
+对${}的总结：
+
+#代表左起，%代表右起
+
+两个符号代表最后一个字符，一个符号代表第一个字符
+#：左起第一个
+##： 左起最后一个
+%：右起第一个
+%%：右起最后一个
+
+实战举例：
+cat t.log|while read id;do ls ${id%%_*}*control.merged.positionsort.markdup.bam;done
