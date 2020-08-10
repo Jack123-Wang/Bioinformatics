@@ -1,0 +1,22 @@
+#参考文献：https://www.jianshu.com/p/e6e410eaea54
+setwd("/disk_HD_3/wangjiaqi/tmp")
+data<-read.csv("E-MTAB-4904.csv")
+library(DESeq2)
+#step1:指定分组因子顺序.
+#注意要保证表达矩阵中的样本顺序和这里的分组顺序是一一对应的
+coldata <- data.frame(condition = factor(c( 'treat', 'treat', 'treat','control','control'), levels = c('treat','control' )))
+#step2:准备输入数据格式，基因名为rownames,样本名为colnames，内容为表达值。
+data<-data[,-2]
+rownames(data)<-data$Geneid
+data<-data[,-1]
+#step3:DESeq2差异分析
+#第一步，构建 DESeqDataSet 对象
+dds <- DESeqDataSetFromMatrix(countData = data, colData = coldata, design= ~condition)
+#第二步，计算差异倍数并获得 p 值
+dds1 <- DESeq(dds, fitType = 'mean', minReplicatesForReplace = 7, parallel = FALSE)
+#注意，需将 treat 在前，control 在后，意为 treat 相较于 control 中哪些基因上调/下调
+res <- results(dds1, contrast = c('condition', 'treat', 'control'))
+res
+#输出表格至本地
+res1 <- data.frame(res, stringsAsFactors = FALSE, check.names = FALSE)
+write.csv(res1,"result.csv")
