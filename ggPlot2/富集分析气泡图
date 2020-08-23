@@ -1,0 +1,22 @@
+setwd("/Users/wangjiaqi/Downloads/阮老师代码准备/3.MFCC/")
+mf<-read.csv("GOMF.csv")
+names(mf)
+library(ggplot2)
+p <- ggplot() #以富集因子和pathway名称为X轴和Y轴
+p+ geom_point(mf,mapping=aes(y=term_name,
+                             x=negative_log10_of_adjusted_p_value,
+                             size=intersection_size,
+                             color=negative_log10_of_adjusted_p_value))+ #点图大小和颜色数据
+  scale_colour_gradient(low="green",high="red") +
+labs(color=expression(-log10Pvalue),size="Gene number",x="Negative log10 of adjusted p value",y="Pathway name") +
+theme(panel.grid.major=element_blank(),panel.grid.minor=element_blank())+#去网格线（panel.grid.major主网格线；panel.grid.minor次网格线	）
+scale_radius(range = c(2, 8))+xlim(20,160)+
+  theme_bw() +labs(size="Genes Number",x="Enrichment Score",y="Go term")+
+  theme(axis.ticks.x=element_line(color="black",size=1,lineend = 22),  #鍒诲害鍔犵矖
+        axis.ticks.y=element_line(color="black",size=1,lineend = 22),
+        axis.title.x = element_text(size = 15, face = "bold",color="black"), #鍧愭爣杞存枃瀛?
+        axis.title.y = element_text(size = 15, face = "bold",color="black"),
+        axis.text.x = element_text(size = 15, face = "bold",color="black" ),#鍒诲害鏂囧瓧
+        axis.text.y = element_text(size = 10, face = "bold" ,color="black"),
+        panel.border=element_rect(color="black", size=1.5))
+     
