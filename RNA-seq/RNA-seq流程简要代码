@@ -1,0 +1,9 @@
+在以下目录运行：/home/wangfengsheng/data_HD_1/20200821/z/clean
+
+转sam：ls *val* | cut -d "_" -f 1,2| sort -u | while read id; do hisat2 -p 8 -x /home/wangfengsheng/data_HD_1/reference/index/hisat210/genome --dta-cufflinks -1 ${id}_R1_val_1.fq.gz -2 ${id}_R2_val_2.fq.gz -S ${id}.hisat2.sam; done
+
+sam转bam：ls *.sam | while read id; do (samtools sort -O bam -@ 5 -o $(basename ${id} .sam).bam ${id}); done
+
+排序bam：ls *.bam | while read id; do samtools sort ${id} -o ${id}_sorted.bam; done
+
+bam建立索引：ls *.bam_sorted.bam | while read id; do samtools index ${id}; done
