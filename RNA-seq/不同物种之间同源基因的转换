@@ -7,7 +7,10 @@ mouse<-useMart("ensembl",dataset="mmusculus_gene_ensembl")
 #useMart一般后面跟两个参数，第一个参数是借助ensemble数据库，第二个参数是告诉选择哪个物种的数据集。
 
 #测试基因集
-genes = c("Zfp286", "Tmx2")
+genes = c("Zfp286", "Tmx2") #导入的基因列表必须是文本格式，不能是data.frame，需要转换如下：
+#导入数据：
+genes<-read.csv("gene.csv",header = F)
+genes<-as.character(genes$V1)
 
 #小鼠基因映射到人
 genes=getLDS(attributes=c("mgi_symbol"),filters = "mgi_symbol",
