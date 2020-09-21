@@ -15,6 +15,13 @@ genes=getLDS(attributes=c("mgi_symbol"),filters = "mgi_symbol",
              attributesL = c("hgnc_symbol","chromosome_name","start_position"),
              martL = human,
              uniqueRows = T)
+             
+#人转小鼠
+genes=getLDS(attributes=c("hgnc_symbol"),filters = "hgnc_symbol",
+             values = genes,mart=human,
+             attributesL = c("mgi_symbol","chromosome_name","start_position"),
+             martL = mouse,
+             uniqueRows = T)
 #attributesL代表的是我们需要同源转化的另外一个数据库，这里我们自然是由小鼠转为人，选择的就是需要连接到的人的Mart对象，在属性参数里面我们填写了三个参数，分别是gene_symbol ,染色体位置，基因起始位位
 
 #attributes属性参数： 代表我们所要检索的数据集的属性参数，比如这里我们用的是mgi_symbol，代表的就是小鼠的基因的symbol名字。可以使用listAttributes函数检索可能的属性列表。
