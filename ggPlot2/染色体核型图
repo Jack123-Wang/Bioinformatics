@@ -1,0 +1,16 @@
+rm(list=ls())
+#导入RIdeogram包
+require(RIdeogram)
+setwd('F:\\R file\\ym')
+
+#导入染色体核型文件和基因密度文件
+a <- read.table('mm9 核型.txt',sep='\t',header = T,stringsAsFactors = F)
+b <- read.csv('ym_density.csv',header = T, stringsAsFactors = F)
+head(a)
+head(b)
+
+#ideogram绘图，colorset1修改颜色,第一个颜色修改底色，第二个颜色修改基因的密度颜色，width调整染色体宽度
+ideogram(karyotype = a, overlaid = b,colorset1=c('#f7f7f7','#e34a33'),width = 200)
+
+#convertSVG表示转化图片格式，如果在AI上自行修改图片，必须执行这一行代码才能生成上一行代码的svg格式图片
+convertSVG("chromosome.svg", device = "png")
