@@ -1,0 +1,38 @@
+##两个gene list里各共有N个基因，list1里有M（M>s）个基因是关于某一通路的，list2里有s（s<M）个基因是关于这个通路的，overlap到k个基因
+setwd('/Users/wangjiaqi/Downloads')
+#data表格的格式为：第一列、第二列为overlap的两列信息，第三列为overlap交集基因集，第四列、第五列对应第一二列的基因集数，第六列是小鼠全基因数（约30000左右）
+data<-read.csv('overlap.csv')
+N=18258
+N=30000
+a<-data$V4
+b<-data$V5
+c<-data$V3
+P<-c()
+R<-c()
+for (i in 1:length(a)){
+    if(a[i]>b[i]) M=a[i] else M=b[i] 
+    if(a[i]>b[i]) s=b[i] else s=a[i]
+    L=N-M
+    L
+    k=c[i]
+    ke=s*M/N
+    ke
+    if(k<=ke)
+    p=sum(dhyper(0:k, M, L, s))#o到k的累计概率——至多问题
+    if(k>ke)
+    p=sum(dhyper(k:s, M, L, s))#k到s的累计概率——至少问题
+    if(k<=ke)
+    r=-abs(log10(p))
+    if(k>ke)
+    r=abs(log10(p))
+    print(p)
+    print(r)
+    P<-c(P,p)
+    R<-c(R,r)
+}
+data$V7<-P
+data$V8<-R
+colnames(data)[7]<-'P-value'
+colnames(data)[8]<-'R-value'
+write.csv(data,'overlap.csv',row.names=F)
+#最后结果，要r>0，p<0.05
