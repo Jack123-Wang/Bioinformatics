@@ -1,0 +1,57 @@
+step1：stringtie产生gtf文件
+stringtie -p 10 zpr1_cont1.hisat2.bam_sorted.bam -G /home/wangjiaqi/data_HD_1/reference/gtf/mouse_gtf/gencode.vM25.annotation.gtf -B -o test.gtf -A AAA.tab -C CCC.gtf -e
+
+
+ls *.bam|while read id;do stringtie -p 10 $id -G /home/wangjiaqi/data_HD_1/reference/gtf/mouse_gtf/gencode.vM25.annotation.gtf -o $id.gtf -e;done 
+
+-A <gene_abund.tab> （可选）对输出的gtf统计基因表达量，并以一个tab分割的文件输出，这里需要提交输出的文件名
+-C <cov_refs.gtf> （可选）对输出的gtf中属于-G提交的参考gtf的转录本统一输出到该文件，这里需要提交一个文件名
+-e （必选！）我认为是最需要注意的参数！！只统计可以匹配-G提交的参考gtf中的转录本，不再对新的转录本做预测，这可以加快程序的运行速度
+-p （必选）指定线程数，默认1
+-G （必选）指定参考的转录组注释文件
+-B （可选）生成用于Ballgown 分析的文件，因为后续用DESeq分析
+-o （必选！）指定输出文件，后面产生的gtf是我们接下来用prepDE.py转换的输入数据，该gtf包含了转录本以及表达量。
+
+
+step2：python转换为DESeq的输入数据
+python prepDE.py -i sample_lst.txt
+#prepDE.py的代码来自http://ccb.jhu.edu/software/stringtie/dl/prepDE.py
+
+#sample_lst.txt的格式：
+ERR188021 <PATH_TO_ERR188021.gtf>
+ERR188023 <PATH_TO_ERR188023.gtf>
+ERR188024 <PATH_TO_ERR188024.gtf>
+ERR188025 <PATH_TO_ERR188025.gtf>
+ERR188027 <PATH_TO_ERR188027.gtf>
+ERR188028 <PATH_TO_ERR188028.gtf>
+ERR188030 <PATH_TO_ERR188030.gtf>
+ERR188033 <PATH_TO_ERR188033.gtf>
+ERR188034 <PATH_TO_ERR188034.gtf>
+ERR188037 <PATH_TO_ERR188037.gtf>
+
+step3：DESeq
+setwd("/home/wangjiaqi/data_HD_1/stringtie.test")
+library("DESeq2")
+library(dplyr)
+#step1:Load gene(/transcript) count matrix and labels
+countData <- as.matrix(read.csv("transcript_count_matrix.csv", row.names="transcript_id"))
+colData <- read.csv(PHENO_DATA, sep="\t", row.names=1)
+colData <- data.frame(condition = factor(c( 'control','control','treat', 'treat'), levels = c('control' ,'treat')))
+
+#step2:Check all sample IDs in colData are also in CountData and match their orders
+all(rownames(colData) %in% colnames(countData))
+countData <- countData[, rownames(colData)]
+all(rownames(colData) == colnames(countData))
+
+#step3:Create a DESeqDataSet from count matrix and labels
+dds <- DESeqDataSetFromMatrix(countData = countData, 
+                                colData = colData, design = ~ condition)
+#step4:Run the default analysis for DESeq2 and generate results table
+dds <- DESeq(dds)
+res <- results(dds, contrast = c('condition', 'treat', 'control'))
+res1 <- data.frame(res, stringsAsFactors = FALSE, check.names = FALSE)
+res1$transcript_id<-rownames(res1)
+ID<-read.csv("stringtie-DESeq(ID转换对应表).csv")
+res2<-inner_join(res1,ID,by="transcript_id")
+
+
