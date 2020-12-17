@@ -30,3 +30,18 @@ g<-unique(g)
 #step3：导出csv表格
 write.csv(g,"go1.csv")
 write.csv(s,"signal1.csv")
+_______________________________________________
+setwd("/Users/wangjiaqi/Desktop")
+data<-read.csv("ribosome.csv",header = F)
+data1<-t(data)
+for (i in 1:1){
+  i=1
+  c<-unique(data1[,i])
+}
+
+for (i in 2:ncol(data1)){
+  a<-unique(data1[,i])
+  c<-append(a,c)
+}
+c<-unique(c)
+write.csv(c,"ribosome1.csv")
