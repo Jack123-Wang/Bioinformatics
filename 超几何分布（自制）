@@ -36,3 +36,29 @@ colnames(data)[7]<-'P-value'
 colnames(data)[8]<-'R-value'
 write.csv(data,'overlap.csv',row.names=F)
 #最后结果，要r>0，p<0.05
+
+
+
+
+------------------------手动--------------------------
+N=18258
+M=873
+s=245
+k=21
+  L=N-M
+  L
+  ke=s*M/N
+  ke
+  if(k<=ke){p=sum(dhyper(0:k, M, L, s))}    #o到k的累计概率——至多问题
+  if(k>ke){p=sum(dhyper(k:s, M, L, s))}     #k到s的累计概率——至少问题
+  if(k<=ke){r=-abs(log10(p))}
+  if(k>ke){r=abs(log10(p))}
+  print(p)
+  print(r)
+
+N2-CORE p=0.65
+N2-MYC p=6.404737e-13
+N1-PRC p=0.3588411
+N3-PRC p=0.2203374
+N1-CTCF p=6.732642e-12
+N3-CTCF p=0.007176634
