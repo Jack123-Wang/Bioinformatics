@@ -1,0 +1,22 @@
+setwd("/Users/wangjiaqi/Desktop")
+#准备一个csv表格，每一列表头是标题，从第二行开始就是这个的基因；一列就是一个集，最后一列做一个去重后的总和。
+data<-read.csv("N1gene.csv")#data就是这个表格
+data0<-data[,6] #data0第一列为提取的data汇总列
+data0<-as.data.frame(data0) #转换为data.frame
+colnames(data)
+data0$GSE18371_SETDB1<-NA #从第二列开始，分别以NA填充，后续通过输入0或1表示这个基因是否出现在这个集里
+data0$GSE17642_ESET<-NA #同上
+data0$GSE26680_ATF7IP<-NA #同上
+data0$GSE70799_TRIM28<-NA #同上
+data0$GSE84905_PCGF6<-NA #同上
+
+for (i in 2:6){
+  for (j in 1:5140){
+    if(data0[j,1] %in% data[,i-1]){data0[j,i]=1}else{data0[j,i]=0}
+  }
+}
+
+#i从2开始，是因为data0的第1列是汇总列，从第二列开始才是0/1计数。
+#j是data的行数
+#data0[j,1] %in% data[,i-1]：看data第一列的第j行（汇总列）基因是否存在data的第i-1列的集中，如果是为1，否为0.
+write.csv(data0,"N1.csv") #输出data0
