@@ -1,0 +1,20 @@
+setwd("/Users/wangjiaqi/Library/Mobile Documents/com~apple~CloudDocs/攻克专项：N1-3表达谱/结果汇总：")
+data<-read.csv("富集分析top10-1.csv")
+library(ggplot2)
+colnames(data)
+data$Description<-as.factor(data$Description)
+data$Description<-factor(data$Description,levels=c("Regulation Of Cell Adhesion","Positive Regulation Of Nervous System Development","Positive Regulation Of Cofactor Metabolic Process","Embryonic Pattern Specification","Skeletal System Development","Pyrimidine-Containing Compound Catabolic Process"," DNA Demethylation","Cardiac Cell Fate Commitment","Embryonic Morphogenesis","Gland Development","Locomotory Behavior","Developmental Growth","Nuclear Receptor Transcription Pathway","Plasma Membrane Bounded Cell Projection Assembly","Supramolecular Fiber Organization","Transmembrane Receptor Protein Tyrosine Kinase Signaling Pathway","Response To Catecholamine","Regulation Of Plasma Membrane Bounded Cell Projection Organization","Brain Development","Cation Transmembrane Transport","Rna Localization","Cell Cycle","Protein Modification By Small Protein Conjugation","Transcriptional Regulation By Tp53","Dna Biosynthetic Process","Ncrna Processing","Rna Splicing","Amide Biosynthetic Process","Major Pathway Of Rrna Processing In The Nucleolus And Cytosol","Metabolism Of Rna","Epithelial Cell Differentiation","Appendage Morphogenesis"," Gland Development","Neuron Fate Commitment","Mesenchyme Development","Tissue Morphogenesis","Sensory Organ Development","Head Development","Cell Fate Commitment","Pattern Specification Process","Synaptic Membrane Adhesion","Neurexins And Neuroligins","O-Linked Glycosylation","Regulation Of Filopodium Assembly","Regulation Of Membrane Potential","Inorganic Ion Transmembrane Transport","Postsynapse Organization","Dendrite Development","Behavior","Cell-Cell Adhesion Via Plasma-Membrane Adhesion Molecules","Dna Demethylation","Ribosome Biogenesis","Protein Localization To Nucleus","Regulation Of Translational Initiation","Chromatin Organization","Telomere Organization","Posttranscriptional Regulation Of Gene Expression","Parvulin-Associated Pre-Rrnp Complex","Regulation Of Rna Splicing","Eukaryotic Translation Initiation","Neurotransmitter Secretion","Pi3K-Akt Signaling Pathway","Regulation Of Cell Junction Assembly","Long-Term Synaptic Depression","Positive Regulation Of Cell Development","Axon Guidance","Substrate Adhesion-Dependent Cell Spreading","Wnt Signaling Pathway, Planar Cell Polarity Pathway","Regulation Of Morphogenesis Of An Epithelium","Developmental Growth Involved In Morphogenesis"),ordered=F)
+p <- ggplot() #以富集因子和pathway名称为X轴和Y轴
+p+ geom_bar(data,mapping=aes(y=Description,x=LogP,fill=GroupID),
+            stat = "identity",
+            position = "dodge" )+xlim(-10,0)+ #点图大小和颜色数据
+  labs(x="Negative log10 of  p value",y="") +
+  theme(panel.grid.major=element_blank(),panel.grid.minor=element_blank())+#去网格线（panel.grid.major主网格线；panel.grid.minor次网格线	）
+  theme_bw()+
+  theme(axis.ticks.x=element_line(color="black",size=1,lineend = 22),  #鍒诲害鍔犵矖
+        axis.ticks.y=element_line(color="black",size=1,lineend = 22),
+        axis.title.x = element_text(size = 10, face = "bold",color="black"), #鍧愭爣杞存枃瀛?
+        axis.title.y = element_text(size = 10, face = "bold",color="black"),
+        axis.text.x = element_text(size = 10, face = "bold",color="black" ),#鍒诲害鏂囧瓧
+        axis.text.y = element_text(size = 10, face = "bold" ,color="black"),
+        panel.border=element_rect(color="black", size=1.5))
