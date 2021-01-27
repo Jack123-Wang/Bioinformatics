@@ -1,2 +1,6 @@
 芯片内部均一化：http://blog.sina.com.cn/s/blog_89e084930102v8ll.html
 芯片之间均一化：https://blog.csdn.net/hzs106/article/details/16980155
+The CEL files were imported into dChIP software(Schadt et al., 2001) for data normalization.
+
+Feature extraction and normalization algorithms for high-density oligonucleotide gene expression array data.
+J Cell Biochem Suppl. 2001; Suppl 37():120-5.
