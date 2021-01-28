@@ -1,0 +1,10 @@
+#搜索ESC xgene chipseq关键词在GEO数据库，初筛，哪些是一篇GEO都没有的，后续就不用再看啦，哪些是有的，可以进一步再手动细看，不然2000+基因看不完的。
+ls *.file|while read ids 
+do
+gene=$(basename $ids .file)
+wget -c https://www.ncbi.nlm.nih.gov/gds/?term=\(Genome+binding%2Foccupancy+profiling+by+high+throughput+sequencing%5BDataSet+Type%5D\)+AND+%22Mus+musculus%22%5Bporgn%3A__txid10090%5D+ESC+$gene -O $gene.html
+cat $gene.html|grep 'Items:'|wc|cut -f 7 -d ' '>>1.txt
+done
+
+ls *.file > 2.txt
+paste 1.txt 2.txt
