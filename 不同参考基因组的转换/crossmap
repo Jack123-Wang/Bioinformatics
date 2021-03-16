@@ -1,0 +1,11 @@
+Crossmap使用方法：
+
+#官网：http://crossmap.sourceforge.net/#chain-file
+#知乎：https://zhuanlan.zhihu.com/p/45731354
+#生信技能树：http://www.bio-info-trainee.com/1413.html
+
+/home/wangjiaqi/data_HD_1/app/crossmap/CrossMap-0.2.2/data/mm9ToMm10.over.chain.gz #转换文件位置
+/home/wangjiaqi/data_HD_1/app/miniconda3/envs/rna/bin/CrossMap.py #软件位置
+
+#代码
+/home/wangjiaqi/data_HD_1/app/miniconda3/envs/rna/bin/CrossMap.py bed /home/wangjiaqi/data_HD_1/app/crossmap/CrossMap-0.2.2/data/mm9ToMm10.over.chain.gz E55Epi_H3K27me3.bed >E55Epi_H3K27me3_mm10.bed
