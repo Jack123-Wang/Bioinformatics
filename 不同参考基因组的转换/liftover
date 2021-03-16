@@ -1,20 +1,13 @@
 参考网址：https://www.jianshu.com/p/2d518866e8f6
 
 安装liftover
-
-```
 conda install ucsc-liftover
-```
 
 下载相关chain文件（from mm9 to mm10)
-
-```
 wget http://hgdownload.soe.ucsc.edu/goldenPath/mm9/liftOver/mm9ToMm10.over.chain.gz
-```
 
 转换
 
-```
 ##需求mm9转化成mm10版本
  gunzip hg19ToHg38.over.chain.gz  #解压chain文件
 liftOver ESC-Hic-promoter_cut.txt mm9ToMm10.over.chain ESC-Hic-promoter.bed unmapped.bed
@@ -23,5 +16,4 @@ liftOver ESC-Hic-promoter_cut.txt mm9ToMm10.over.chain ESC-Hic-promoter.bed unma
 #[2] chain文件
 #[3] 转换后的文件
 #[4] 转换不成功的部分
-```
 
