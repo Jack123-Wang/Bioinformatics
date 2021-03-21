@@ -1,0 +1,24 @@
+7个高占据peak.bed与组蛋白做热图
+
+# bamCoverage
+ls *.bam|while read id;do bamCoverage --bam $id -o $id.bw ;done
+
+# computeMatrix
+
+ls *.bed >config
+cat config |while read id;do computeMatrix reference-point -S H3K27me3.bw  H3K9me3.bw H4K20me3.bw H3K4me3.bw H3K4me2.bw H3K9ac.bw   H3K36me3.bw  H3K79me2.bw  H3K4me1.bw  H3K27ac.bw -R $id -a 3000 -b 3000 -o $(basename $id .bed).gz  --outFileSortedRegions $id.bed -p 20 --skipZeros ; done
+
+注明：此时每个peak是分开做的，故其Y轴是不一致的，如果需要统一尺度，-R后面一次输入7个，空格分割即可。
+# plotHeatmap
+ls *.gz|while read id;do plotHeatmap -m $id  -out $(basename $id .gz).png --colorMap  Reds --heatmapHeight 15 ;done
+# plotProfile
+plotProfile -m matrix.mat.gz \
+     -out ExampleProfile2.png \
+     --plotType=fill \ # add color between the x axis and the lines
+     --perGroup \ # make one image per BED file instead of per bigWig file
+     --colors red yellow blue \ 
+     --plotTitle "Test data profile"
+
+ls *.gz |while read id;do plotProfile -m $id   -out $(basename $id .gz)._Profile.png    --plotType=lines   --perGroup --legendLocation  upper-right --plotWidth 30 --plotHeight 20   ;done
+
+注明：--colors可以调整线条的颜色
